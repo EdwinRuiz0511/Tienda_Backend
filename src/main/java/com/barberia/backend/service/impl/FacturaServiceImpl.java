@@ -28,7 +28,7 @@ public class FacturaServiceImpl implements IFacturaService {
         return facturaEnt;
     }
 
-    // Base de datos → Entity → DTO → Frontend
+    // Base de datos → Entity → DTO → frontend
     private FacturaDTO entityToDto(FacturaEntity facturaEnt) {
         FacturaDTO facturaDto = new FacturaDTO();
         facturaDto.setIdfactura(facturaEnt.getId_Factura());
