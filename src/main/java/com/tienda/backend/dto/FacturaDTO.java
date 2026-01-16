@@ -1,5 +1,6 @@
-package com.barberia.backend.dto;
+package com.tienda.backend.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,15 +10,16 @@ import java.util.List;
 @Getter
 @Setter
 @JsonPropertyOrder({
-        "idfactura",
+        "id_Factura",
         "totalFactura",
         "listaDetalleFacturaDTO",
 
 })
 public class FacturaDTO {
 
-    private int idfactura;
+    private int id_Factura;
     private float totalFactura;
-    private UsuarioDTO usuarioDto;
+    @JsonIgnore
+    private Long id_Usuario;
     private List<DetalleFacturaDTO> listaDetalleFacturaDTO;
 }

@@ -1,4 +1,4 @@
-package com.barberia.backend.dto;
+package com.tienda.backend.dto;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import java.util.List;
 @Getter
 @Setter
 @JsonPropertyOrder({
-        "idUsuario",
+        "id_Usuario",
         "nombre",
         "apellido",
         "sexo",
@@ -19,7 +19,7 @@ import java.util.List;
 })
 public class UsuarioDTO {
 
-    private Long idUsuario;
+    private Long id_Usuario;
     private String nombre;
     private String apellido;
     private char sexo;

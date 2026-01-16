@@ -1,7 +1,7 @@
-package com.barberia.backend.controller;
+package com.tienda.backend.controller;
 
-import com.barberia.backend.dto.FacturaDTO;
-import com.barberia.backend.service.IFacturaService;
+import com.tienda.backend.dto.FacturaDTO;
+import com.tienda.backend.service.IFacturaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
