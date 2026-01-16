@@ -1,4 +1,4 @@
-package com.barberia.backend.entity;
+package com.tienda.backend.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -22,7 +22,7 @@ public class DetalleFacturaEntity {
     @Column(name = "cant_Productos")
     private int cantProductos;
 
-    @Column(name = "total")
+    @Column(name = "total", nullable = false)
     private float total;
 
     @ManyToOne

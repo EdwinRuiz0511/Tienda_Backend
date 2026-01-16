@@ -1,4 +1,4 @@
-package com.barberia.backend.entity;
+package com.tienda.backend.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;

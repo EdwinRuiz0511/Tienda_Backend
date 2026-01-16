@@ -1,6 +1,6 @@
-package com.barberia.backend.dto;
+package com.tienda.backend.dto;
 
-import com.barberia.backend.entity.DetalleFacturaEntity;
+import com.tienda.backend.entity.DetalleFacturaEntity;
 import lombok.Getter;
 import lombok.Setter;
 

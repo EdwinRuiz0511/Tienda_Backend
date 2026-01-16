@@ -1,4 +1,4 @@
-package com.barberia.backend.dto;
+package com.tienda.backend.dto;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Getter;
@@ -15,6 +15,9 @@ import lombok.Setter;
 public class DetalleFacturaDTO {
 
     private Long id_DetalleFac;
+    private Integer id_Factura;
+    private Long id_Producto;
+    private Long id_Usuario;
     private int cantProductos;
-    private float total;
+    private float total;             // Este lo enviamos de vuelta, no lo recibe del frontend
 }

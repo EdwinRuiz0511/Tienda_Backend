@@ -1,13 +1,13 @@
-package com.barberia.backend.service.impl;
+package com.tienda.backend.service.impl;
 
-import com.barberia.backend.dto.DetalleFacturaDTO;
-import com.barberia.backend.dto.FacturaDTO;
-import com.barberia.backend.dto.UsuarioDTO;
-import com.barberia.backend.entity.DetalleFacturaEntity;
-import com.barberia.backend.entity.FacturaEntity;
-import com.barberia.backend.entity.UsuarioEntity;
-import com.barberia.backend.repository.IUsuarioRepository;
-import com.barberia.backend.service.IUsuarioService;
+import com.tienda.backend.dto.DetalleFacturaDTO;
+import com.tienda.backend.dto.FacturaDTO;
+import com.tienda.backend.dto.UsuarioDTO;
+import com.tienda.backend.entity.DetalleFacturaEntity;
+import com.tienda.backend.entity.FacturaEntity;
+import com.tienda.backend.entity.UsuarioEntity;
+import com.tienda.backend.repository.IUsuarioRepository;
+import com.tienda.backend.service.IUsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,7 +35,7 @@ public class UsuarioServiceImpl implements IUsuarioService {
     // Base de datos → Entity → DTO → Frontend
     private UsuarioDTO entityToDto(UsuarioEntity usuarioEnt) {
         UsuarioDTO usuarioDto = new UsuarioDTO();
-        usuarioDto.setIdUsuario(usuarioEnt.getId_Usuario()); //Ahora si se incluye la Identificacion por ya existe (la creó la BD)
+        usuarioDto.setId_Usuario(usuarioEnt.getId_Usuario()); //Ahora si se incluye la Identificacion por ya existe (la creó la BD)
         usuarioDto.setNombre(usuarioEnt.getNombre());
         usuarioDto.setApellido(usuarioEnt.getApellido());
         usuarioDto.setSexo(usuarioEnt.getSexo());
@@ -47,7 +47,7 @@ public class UsuarioServiceImpl implements IUsuarioService {
     // Convierte un UsuarioEntity en UsuarioDTO incluyendo solo sus Facturas
     private UsuarioDTO entityToDto2(UsuarioEntity usuarioEnt) {
         UsuarioDTO usuarioDto = new UsuarioDTO();
-        usuarioDto.setIdUsuario(usuarioEnt.getId_Usuario()); //Ahora si se incluye la Identificacion por ya existe (la creó la BD)
+        usuarioDto.setId_Usuario(usuarioEnt.getId_Usuario()); //Ahora si se incluye la Identificacion por ya existe (la creó la BD)
         usuarioDto.setNombre(usuarioEnt.getNombre());
         usuarioDto.setApellido(usuarioEnt.getApellido());
         usuarioDto.setSexo(usuarioEnt.getSexo());
@@ -57,7 +57,7 @@ public class UsuarioServiceImpl implements IUsuarioService {
         // Recorre las facturas del usuario
         for(FacturaEntity facturaEnt : usuarioEnt.getFacturaEnt()){
             FacturaDTO facturaDto = new FacturaDTO();
-            facturaDto.setIdfactura(facturaEnt.getId_Factura());
+            facturaDto.setId_Factura(facturaEnt.getId_Factura());
             facturaDto.setTotalFactura(facturaEnt.getTotalFactura());
 
             // Agrega la factura al usuario
@@ -70,7 +70,7 @@ public class UsuarioServiceImpl implements IUsuarioService {
     private UsuarioDTO entityToDto3(UsuarioEntity usuarioEnt) {
         UsuarioDTO usuarioDto = new UsuarioDTO();
         // Copiamos los datos básicos del usuario (Entity → DTO)
-        usuarioDto.setIdUsuario(usuarioEnt.getId_Usuario());
+        usuarioDto.setId_Usuario(usuarioEnt.getId_Usuario());
         usuarioDto.setNombre(usuarioEnt.getNombre());
         usuarioDto.setApellido(usuarioEnt.getApellido());
         usuarioDto.setSexo(usuarioEnt.getSexo());
@@ -81,7 +81,7 @@ public class UsuarioServiceImpl implements IUsuarioService {
         // Recorre las facturas del usuario
         for (FacturaEntity facturaEnt : usuarioEnt.getFacturaEnt()) {// Creamos el DTO de la factura
             FacturaDTO facturaDto = new FacturaDTO();
-            facturaDto.setIdfactura(facturaEnt.getId_Factura());
+            facturaDto.setId_Factura(facturaEnt.getId_Factura());
             facturaDto.setTotalFactura(facturaEnt.getTotalFactura());
 
             // Inicializamos la lista de detalles de la factura// Creamos lista de DETALLES
@@ -93,6 +93,10 @@ public class UsuarioServiceImpl implements IUsuarioService {
                 detalleFacturaDto.setId_DetalleFac(detalleFacturaEnt.getId_DetalleFac());
                 detalleFacturaDto.setCantProductos(detalleFacturaEnt.getCantProductos());
                 detalleFacturaDto.setTotal(detalleFacturaEnt.getTotal());
+
+                detalleFacturaDto.setId_Factura(facturaEnt.getId_Factura());
+                detalleFacturaDto.setId_Producto(detalleFacturaEnt.getProductosEnt().getId_Productos());
+                detalleFacturaDto.setId_Usuario(facturaEnt.getUsuarioEnt().getId_Usuario());
 
                 // Agrega el detalle a la factura
                 facturaDto.getListaDetalleFacturaDTO().add(detalleFacturaDto);
@@ -109,7 +113,7 @@ public class UsuarioServiceImpl implements IUsuarioService {
     @Override
     public UsuarioDTO agregarUsuario(UsuarioDTO usuarioDto) {
         UsuarioEntity usuarioEnt = usuarioRepository.save(dtoToEntity(usuarioDto));
-        usuarioDto.setIdUsuario(usuarioEnt.getId_Usuario());
+        usuarioDto.setId_Usuario(usuarioEnt.getId_Usuario());
         return usuarioDto;
     }
 
@@ -130,8 +134,8 @@ public class UsuarioServiceImpl implements IUsuarioService {
 
     // Metodo para listar las Facturas de un Usuario por su ID
     @Override
-    public UsuarioDTO listar_Usuarios_Factu_PorId(Long idUsuario) {
-        Optional<UsuarioEntity> usuarioEntityOpc = usuarioRepository.findById(idUsuario);
+    public UsuarioDTO listar_Usuarios_Factu_PorId(Long id_Usuario) {
+        Optional<UsuarioEntity> usuarioEntityOpc = usuarioRepository.findById(id_Usuario);
         UsuarioDTO usuarioDto = null;
 
         if(usuarioEntityOpc.isPresent()){
@@ -143,8 +147,8 @@ public class UsuarioServiceImpl implements IUsuarioService {
 
     //Metodo para listar un Usuario con sus Facturas y Detalles por su ID
     @Override
-    public UsuarioDTO listar_Usuarios_Factu_Detall_PorId(Long idUsuario) {
-        Optional<UsuarioEntity> usuarioEntityOpc = usuarioRepository.findById(idUsuario);
+    public UsuarioDTO listar_Usuarios_Factu_Detall_PorId(Long id_Usuario) {
+        Optional<UsuarioEntity> usuarioEntityOpc = usuarioRepository.findById(id_Usuario);
         UsuarioDTO usuarioDto = null;
 
         if (usuarioEntityOpc.isPresent()) {
@@ -155,9 +159,9 @@ public class UsuarioServiceImpl implements IUsuarioService {
     }
 
     @Override
-    public UsuarioDTO actuzalizarUsuario(Long idUsuario, UsuarioDTO usuarioDto) {
-        UsuarioEntity usuarioEnt = usuarioRepository.findById(idUsuario)
-                .orElseThrow(() -> new RuntimeException("Usuario con ID -> "+idUsuario+ " No encontrado"));
+    public UsuarioDTO actuzalizarUsuario(Long id_Usuario, UsuarioDTO usuarioDto) {
+        UsuarioEntity usuarioEnt = usuarioRepository.findById(id_Usuario)
+                .orElseThrow(() -> new RuntimeException("Usuario con ID -> "+id_Usuario+ " No encontrado"));
 
         // DTO → ENTITY (actualización)
         usuarioEnt.setNombre(usuarioDto.getNombre());
@@ -173,11 +177,11 @@ public class UsuarioServiceImpl implements IUsuarioService {
     }
 
     @Override
-    public void eliminarUsuario(Long idUsuario) {
+    public void eliminarUsuario(Long id_Usuario) {
         // BASE DE DATOS → ENTITY
         // Se valida que el usuario exista antes de eliminar
-        UsuarioEntity usuarioEnt = usuarioRepository.findById(idUsuario).
-                orElseThrow(() -> new RuntimeException("Usuario con ID -> "+idUsuario+" No encontrado"));
+        UsuarioEntity usuarioEnt = usuarioRepository.findById(id_Usuario).
+                orElseThrow(() -> new RuntimeException("Usuario con ID -> "+ id_Usuario +" No encontrado"));
 
         // Se elimina el registro
         usuarioRepository.delete(usuarioEnt);

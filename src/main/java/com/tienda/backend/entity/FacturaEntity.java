@@ -1,4 +1,4 @@
-package com.barberia.backend.entity;
+package com.tienda.backend.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -24,7 +24,7 @@ public class FacturaEntity {
     private int id_Factura;
 
     @Column(name = "totalFactura")
-    private float totalFactura;
+    private Float totalFactura;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "identificacion_usuario")

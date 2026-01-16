@@ -1,6 +1,6 @@
-package com.barberia.backend.repository;
+package com.tienda.backend.repository;
 
-import com.barberia.backend.entity.DetalleFacturaEntity;
+import com.tienda.backend.entity.DetalleFacturaEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
