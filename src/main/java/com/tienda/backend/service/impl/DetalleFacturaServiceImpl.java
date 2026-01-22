@@ -54,22 +54,28 @@ public class DetalleFacturaServiceImpl implements IDetalleFacturaService {
                 orElseThrow(() -> new RuntimeException("Producto no encontrado"));
 
 
-        // Crear Entidad de DetallesFactura
+        // Crear Entidad de DetallesFactura DTO → Entity:
         DetalleFacturaEntity detalleFacturaEnt = new DetalleFacturaEntity();
         detalleFacturaEnt.setCantProductos(detalleFacturaDto.getCantProductos());
         detalleFacturaEnt.setFacturaEnt(facturaEnt);
         detalleFacturaEnt.setProductosEnt(productosEnt);
 
         //Calcular Total
-        float total = detalleFacturaDto.getCantProductos() * productosEnt.getPrecio();
+        float total = (float) (detalleFacturaDto.getCantProductos() * productosEnt.getPrecio());
         detalleFacturaEnt.setTotal(total);
 
-        // Actualizar factura tambien
-        facturaEnt.setTotalFactura(total);
-        facturaRepository.save(facturaEnt);
-
-        // Guardar en BD
+        // Guardar en BD (DetalleFcatura)
         DetalleFacturaEntity guardado = detalleFacturaRepository.save(detalleFacturaEnt);
+
+        // Actualizar factura tambien y acumular
+        Float totalActual = facturaEnt.getTotalFactura();
+        if (totalActual == null) {
+            totalActual = 0f;
+        }
+        float nuevoTotal = totalActual + total;
+
+        facturaEnt.setTotalFactura(nuevoTotal);
+        facturaRepository.save(facturaEnt);
 
         // Pasar de Entity -> DTO
         DetalleFacturaDTO respuesta = new DetalleFacturaDTO();

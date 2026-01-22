@@ -24,10 +24,10 @@ public class FacturaEntity {
     private int id_Factura;
 
     @Column(name = "totalFactura")
-    private Float totalFactura;
+    private Float totalFactura = 0f;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "identificacion_usuario")
+    @JoinColumn(name = "id_Usuario") //FK
     private UsuarioEntity usuarioEnt;
 
     @OneToMany(mappedBy = "facturaEnt", cascade = CascadeType.ALL, fetch = FetchType.EAGER)

@@ -23,7 +23,7 @@ public class DetalleFacturaEntity {
     private int cantProductos;
 
     @Column(name = "total", nullable = false)
-    private float total;
+    private Float total;
 
     @ManyToOne
     @JoinColumn(name = "id_Factura") //FK

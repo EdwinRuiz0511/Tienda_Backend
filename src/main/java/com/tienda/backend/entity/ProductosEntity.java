@@ -27,7 +27,7 @@ public class ProductosEntity {
     private String nombreProducto;
 
     @Column(name = "precio")
-    private int precio;
+    private double precio;
 
     @OneToMany(mappedBy = "productosEnt", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JsonIgnore

@@ -17,10 +17,10 @@ public class UsuarioController {
     @Autowired
     private IUsuarioService usuarioService;
 
-    @PostMapping ("/agregarUsuario")
-    public ResponseEntity<UsuarioDTO> guardarUsuario(@RequestBody UsuarioDTO usuarioDto){
-        return ResponseEntity.ok().body(usuarioService.agregarUsuario(usuarioDto));
-    }
+//    @PostMapping ("/agregarUsuario")
+//    public ResponseEntity<UsuarioDTO> guardarUsuario(@RequestBody UsuarioDTO usuarioDto){
+//        return ResponseEntity.ok().body(usuarioService.agregarUsuario(usuarioDto));
+//    }
 
     @GetMapping("/listarUsuarios")
     public ResponseEntity<List<UsuarioDTO>> ListarUsuarios() {

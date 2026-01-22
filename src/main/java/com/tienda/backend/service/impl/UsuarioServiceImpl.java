@@ -1,5 +1,6 @@
 package com.tienda.backend.service.impl;
 
+import com.opencsv.CSVReader;
 import com.tienda.backend.dto.DetalleFacturaDTO;
 import com.tienda.backend.dto.FacturaDTO;
 import com.tienda.backend.dto.UsuarioDTO;
@@ -11,6 +12,8 @@ import com.tienda.backend.service.IUsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -55,7 +58,7 @@ public class UsuarioServiceImpl implements IUsuarioService {
         usuarioDto.setListFacturaDTO(new ArrayList<>());
 
         // Recorre las facturas del usuario
-        for(FacturaEntity facturaEnt : usuarioEnt.getFacturaEnt()){
+        for(FacturaEntity facturaEnt : usuarioEnt.getListaFacturaEnt()){
             FacturaDTO facturaDto = new FacturaDTO();
             facturaDto.setId_Factura(facturaEnt.getId_Factura());
             facturaDto.setTotalFactura(facturaEnt.getTotalFactura());
@@ -75,16 +78,17 @@ public class UsuarioServiceImpl implements IUsuarioService {
         usuarioDto.setApellido(usuarioEnt.getApellido());
         usuarioDto.setSexo(usuarioEnt.getSexo());
         usuarioDto.setTelefono(usuarioEnt.getTelefono());
+
         // Inicializamos la lista donde se almacenarán las facturas
         usuarioDto.setListFacturaDTO(new ArrayList<>());
 
         // Recorre las facturas del usuario
-        for (FacturaEntity facturaEnt : usuarioEnt.getFacturaEnt()) {// Creamos el DTO de la factura
+        for (FacturaEntity facturaEnt : usuarioEnt.getListaFacturaEnt()) {
             FacturaDTO facturaDto = new FacturaDTO();
             facturaDto.setId_Factura(facturaEnt.getId_Factura());
             facturaDto.setTotalFactura(facturaEnt.getTotalFactura());
 
-            // Inicializamos la lista de detalles de la factura// Creamos lista de DETALLES
+            // Inicializamos la lista de detalles de la factura
             facturaDto.setListaDetalleFacturaDTO(new ArrayList<>());
 
             // Recorre los detalles de cada factura
@@ -96,7 +100,9 @@ public class UsuarioServiceImpl implements IUsuarioService {
 
                 detalleFacturaDto.setId_Factura(facturaEnt.getId_Factura());
                 detalleFacturaDto.setId_Producto(detalleFacturaEnt.getProductosEnt().getId_Productos());
-                detalleFacturaDto.setId_Usuario(facturaEnt.getUsuarioEnt().getId_Usuario());
+                detalleFacturaDto.setNombreProducto(detalleFacturaEnt.getProductosEnt().getNombreProducto());
+                detalleFacturaDto.setPrecio(detalleFacturaEnt.getProductosEnt().getPrecio());
+                // detalleFacturaDto.setId_Usuario(facturaEnt.getUsuarioEnt().getId_Usuario());
 
                 // Agrega el detalle a la factura
                 facturaDto.getListaDetalleFacturaDTO().add(detalleFacturaDto);

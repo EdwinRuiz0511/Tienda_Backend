@@ -19,7 +19,7 @@ public class FacturaDTO {
 
     private int id_Factura;
     private float totalFactura;
+    private List<DetalleFacturaDTO> listaDetalleFacturaDTO;
     @JsonIgnore
     private Long id_Usuario;
-    private List<DetalleFacturaDTO> listaDetalleFacturaDTO;
 }

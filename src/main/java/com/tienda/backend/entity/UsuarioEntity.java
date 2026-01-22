@@ -20,8 +20,8 @@ public class UsuarioEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "identificacion")
-    private Long id_Usuario;
+    @Column(name = "id_Usuario")
+    private Long id_Usuario; //PK
 
     @Column(name = "nombre")
     private String nombre;
@@ -35,9 +35,9 @@ public class UsuarioEntity {
     @Column(name = "telefono")
     private int telefono;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "usuarioEnt")
+    @OneToMany(mappedBy = "usuarioEnt", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JsonIgnore
-    List<FacturaEntity> facturaEnt = new ArrayList<>();
+    List<FacturaEntity> listaFacturaEnt = new ArrayList<>();
 }
 
 /*
