@@ -35,9 +35,21 @@ public class UsuarioEntity {
     @Column(name = "telefono")
     private int telefono;
 
+    //Campos para Login
+    @Column(name = "username", unique = true, nullable = false)
+    private String username;
+
+    @Column(name = "password", nullable = false)
+    private String password;
+
     @OneToMany(mappedBy = "usuarioEnt", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JsonIgnore
     List<FacturaEntity> listaFacturaEnt = new ArrayList<>();
+
+    //Relacion con la tabla RolEntity
+    @ManyToOne
+    @JoinColumn(name = "id_Rol")
+    private RolEntity rolEnt;
 }
 
 /*

@@ -1,12 +1,15 @@
 package com.tienda.backend.service;
 
 import com.tienda.backend.dto.UsuarioDTO;
+import com.tienda.backend.security.dtoSecurity.RegisterRequestDTO;
 
 import java.util.List;
 
 public interface IUsuarioService {
 
-    UsuarioDTO agregarUsuario(UsuarioDTO usuarioDto);
+    //UsuarioDTO agregarUsuario(UsuarioDTO usuarioDto);
+
+    void registrarUsuario(RegisterRequestDTO registerRequestDTO);
 
     List<UsuarioDTO> listarUsuarios();
 

@@ -6,14 +6,16 @@ import com.tienda.backend.dto.FacturaDTO;
 import com.tienda.backend.dto.UsuarioDTO;
 import com.tienda.backend.entity.DetalleFacturaEntity;
 import com.tienda.backend.entity.FacturaEntity;
+import com.tienda.backend.entity.RolEntity;
 import com.tienda.backend.entity.UsuarioEntity;
+import com.tienda.backend.repository.IRolRepository;
 import com.tienda.backend.repository.IUsuarioRepository;
+import com.tienda.backend.security.dtoSecurity.RegisterRequestDTO;
 import com.tienda.backend.service.IUsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -23,6 +25,14 @@ public class UsuarioServiceImpl implements IUsuarioService {
 
     @Autowired
     IUsuarioRepository usuarioRepository;
+
+    @Autowired
+    IRolRepository rolRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+
 
     // Frontend → DTO → Entity → Base de datos
     private UsuarioEntity dtoToEntity (UsuarioDTO usuarioDto){
@@ -43,6 +53,7 @@ public class UsuarioServiceImpl implements IUsuarioService {
         usuarioDto.setApellido(usuarioEnt.getApellido());
         usuarioDto.setSexo(usuarioEnt.getSexo());
         usuarioDto.setTelefono(usuarioEnt.getTelefono());
+        usuarioDto.setUsername(usuarioEnt.getUsername());
 
         return usuarioDto;
     }
@@ -117,10 +128,32 @@ public class UsuarioServiceImpl implements IUsuarioService {
     //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @Override
-    public UsuarioDTO agregarUsuario(UsuarioDTO usuarioDto) {
-        UsuarioEntity usuarioEnt = usuarioRepository.save(dtoToEntity(usuarioDto));
-        usuarioDto.setId_Usuario(usuarioEnt.getId_Usuario());
-        return usuarioDto;
+    public void registrarUsuario(RegisterRequestDTO registerRequestDTO) {
+        // 1. Validar si el username ya existe
+        if (usuarioRepository.findByUsername(registerRequestDTO.getUsername()).isPresent()) {
+            throw new RuntimeException("❌ El username ya existe");
+        }
+
+        // 2. Buscar rol USER (por seguridad, todo usuario registrado es USER)
+        RolEntity rolEnt = rolRepository.findByNombreRol("USER")
+                .orElseThrow(() -> new RuntimeException("❌ Rol USER no existe"));
+
+        // 3. Crear entidad Usuario:
+        UsuarioEntity usuarioEnt = new UsuarioEntity();
+        usuarioEnt.setNombre(registerRequestDTO.getNombre());
+        usuarioEnt.setApellido(registerRequestDTO.getApellido());
+        usuarioEnt.setUsername(registerRequestDTO.getUsername());
+        usuarioEnt.setSexo(registerRequestDTO.getSexo());
+        usuarioEnt.setTelefono(registerRequestDTO.getTelefono());
+
+        // 4. Encriptar password antes de guardar
+        usuarioEnt.setPassword(passwordEncoder.encode(registerRequestDTO.getPassword()));
+
+        //5. Asignar rol
+        usuarioEnt.setRolEnt(rolEnt);
+
+        // 6. Guardar en base de datos_
+        usuarioRepository.save(usuarioEnt);
     }
 
     @Override

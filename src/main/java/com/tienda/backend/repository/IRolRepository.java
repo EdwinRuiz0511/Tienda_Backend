@@ -1,13 +1,13 @@
 package com.tienda.backend.repository;
 
-import com.tienda.backend.entity.UsuarioEntity;
+import com.tienda.backend.entity.RolEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 @Repository
-public interface IUsuarioRepository extends JpaRepository <UsuarioEntity, Long> {
+public interface IRolRepository extends JpaRepository<RolEntity, Long> {
 
-    Optional<UsuarioEntity> findByUsername(String username);
+    Optional<RolEntity> findByNombreRol(String nombreRol);
 }
