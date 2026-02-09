@@ -5,12 +5,11 @@ import com.tienda.backend.service.IUsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Controller
+@RestController
 @RequestMapping ("/usuarios")
 public class UsuarioController {
 
@@ -36,7 +35,7 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioDto);
     }
 
-    @GetMapping("listarUsuariosConFacturasYDetalles/{idUsuario}")
+    @GetMapping("/listarUsuariosConFacturasYDetalles/{idUsuario}")
     public ResponseEntity<UsuarioDTO> ListarUsuariosConFactuYDetallPorId (@PathVariable Long idUsuario) {
         UsuarioDTO usuarioDto = usuarioService.listar_Usuarios_Factu_Detall_PorId(idUsuario);
 

@@ -43,8 +43,8 @@ public class JwtService {
 
     public boolean tokenEsValido(String token) {
         try {
-            extraerClaims(token);
-            return true;
+           Claims claims = extraerClaims(token);
+           return !claims.getExpiration().before(new Date());
         }catch (Exception e) {
             return false;
         }
