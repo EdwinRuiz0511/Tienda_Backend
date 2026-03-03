@@ -1,6 +1,5 @@
 package com.tienda.backend.service.impl;
 
-import com.opencsv.CSVReader;
 import com.tienda.backend.dto.DetalleFacturaDTO;
 import com.tienda.backend.dto.FacturaDTO;
 import com.tienda.backend.dto.UsuarioDTO;
@@ -66,6 +65,8 @@ public class UsuarioServiceImpl implements IUsuarioService {
         usuarioDto.setApellido(usuarioEnt.getApellido());
         usuarioDto.setSexo(usuarioEnt.getSexo());
         usuarioDto.setTelefono(usuarioEnt.getTelefono());
+
+        // Inicializamos la lista donde se almacenarán las facturas
         usuarioDto.setListFacturaDTO(new ArrayList<>());
 
         // Recorre las facturas del usuario
@@ -105,7 +106,7 @@ public class UsuarioServiceImpl implements IUsuarioService {
             // Recorre los detalles de cada factura
             for (DetalleFacturaEntity detalleFacturaEnt : facturaEnt.getListaDetalleFacturaEnt()) {
                 DetalleFacturaDTO detalleFacturaDto = new DetalleFacturaDTO();
-                detalleFacturaDto.setId_DetalleFac(detalleFacturaEnt.getId_DetalleFac());
+                detalleFacturaDto.setId_DetalleFac(detalleFacturaEnt.getId_DetalleFac());                               // Toma los datos de la factura de la base de datos y pásalos al objeto que se enviará al cliente.
                 detalleFacturaDto.setCantProductos(detalleFacturaEnt.getCantProductos());
                 detalleFacturaDto.setTotal(detalleFacturaEnt.getTotal());
 

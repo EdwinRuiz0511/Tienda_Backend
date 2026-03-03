@@ -1,8 +1,11 @@
 package com.tienda.backend.security.serviceSecurity;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
@@ -28,7 +31,7 @@ public class JwtService {
                 .compact();                                                                                 // Empaqueta todo en un Sprinf tipo: eyJhbGciOiJIUzI1NiJ9...
     }
 
-    // 🧠 Extraer claims
+    // Método que recibe un JWT y devuelve sus datos internos (claims)
     private Claims extraerClaims(String token) {
         return Jwts.parser()
                 .verifyWith(getSigningKey())
@@ -43,10 +46,25 @@ public class JwtService {
 
     public boolean tokenEsValido(String token) {
         try {
-           Claims claims = extraerClaims(token);
-           return !claims.getExpiration().before(new Date());
-        }catch (Exception e) {
-            return false;
+            Claims claims = extraerClaims(token);
+            return !claims.getExpiration().before(new Date());
+
+        } catch (ExpiredJwtException e) {                                                   // El usuario debe volver a loguearse
+            System.out.println("JWT expirado: " + e.getMessage());
+
+        } catch (MalformedJwtException e) {                                                 // Token corrupto o manipulado
+            System.out.println("JWT mal formado: " + e.getMessage());
+
+        } catch (SignatureException e) {                                                    // Intento de falsificación
+            System.out.println("Firma JWT inválida: " + e.getMessage());
+
+        } catch (IllegalArgumentException e) {                                              // Error de cliente
+            System.out.println("Token vacío o null: " + e.getMessage());
+
+        } catch (Exception e) {                                                             // Error interno
+            System.out.println("Error inesperado validando JWT: " + e.getMessage());
         }
+
+        return false;
     }
 }
