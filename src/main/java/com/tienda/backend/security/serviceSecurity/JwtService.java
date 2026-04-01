@@ -22,9 +22,10 @@ public class JwtService {
     }
 
     // 🔐 Generar token
-    public String generarToken(String username) {
+    public String generarToken(String username, String rol) {
         return Jwts.builder()
                 .subject(username)                                                                          // Aquí guardamos el username del usuario autenticado.
+                .claim("role", rol)
                 .issuedAt(new Date())                                                                       // Fecha en que el token fue creado.
                 .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60)) //1 hora                 // Fecha de expiración.
                 .signWith(getSigningKey())                                                                  // Firma el token con tu clave secreta.
@@ -42,6 +43,10 @@ public class JwtService {
 
     public String extraerUsername(String token) {
         return extraerClaims(token).getSubject();
+    }
+
+    public String extraerRol(String token) {
+        return extraerClaims(token).get("role", String.class);
     }
 
     public boolean tokenEsValido(String token) {

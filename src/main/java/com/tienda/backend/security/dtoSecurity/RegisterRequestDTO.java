@@ -10,7 +10,7 @@ import lombok.Setter;
 @Setter
 public class RegisterRequestDTO {
 
-    @NotBlank(message = "|nombre|" + Constantes.NOMBRE)
+    @NotBlank(message = "|nombre| ---> " + Constantes.NOMBRE)
     private String nombre;
 
     @NotBlank(message = "El apellido es obligatorio")
@@ -20,7 +20,7 @@ public class RegisterRequestDTO {
     private Character  sexo;
 
     @NotNull(message = "El telefono es obligatorio")
-    private int  telefono;
+    private String  telefono;
 
     @NotBlank(message = "El username es obligatorio")
     private String username;

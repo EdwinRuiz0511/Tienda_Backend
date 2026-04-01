@@ -33,7 +33,7 @@ public class UsuarioEntity {
     private char sexo;
 
     @Column(name = "telefono")
-    private int telefono;
+    private String telefono;
 
     //Campos para Login
     @Column(name = "username", unique = true, nullable = false)

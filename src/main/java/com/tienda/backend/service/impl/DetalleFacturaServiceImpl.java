@@ -125,7 +125,7 @@ public class DetalleFacturaServiceImpl implements IDetalleFacturaService {
         FacturaEntity facturaEnt = facturaRepository.findById(facturaId)
                 .orElseThrow(() -> new RuntimeException("Factura no encontrada"));
 
-        // 4. Obtener lista de IDs de productos (sin repetir)
+        // 4. Obtener lista de IDs de productos (sin repetir) -> O(n)
                 List<Long> idsProductos = listaDetallesFactura.stream()                                                 // Recorre la lista
                 .map(DetalleFacturaDTO :: getId_Producto)                                                               // extrae solo los IDs
                 .distinct()                                                                                             // elimina los repetidos
@@ -134,7 +134,7 @@ public class DetalleFacturaServiceImpl implements IDetalleFacturaService {
         // 5. Traer todos los productos en UNA sola consulta a BD
         List<ProductosEntity> productosEnt = productosRepository.findAllById(idsProductos);
 
-        // 6. Convertir lista de productos en mapa para búsqueda rápida
+        // 6. Convertir lista de productos en mapa para búsqueda rápida -> O(n)
         Map<Long, ProductosEntity> mapaProductosEnt = productosEnt.stream()
                 .collect(Collectors.toMap(ProductosEntity :: getId_Productos, p -> p));
 
@@ -146,11 +146,11 @@ public class DetalleFacturaServiceImpl implements IDetalleFacturaService {
 
         // 9. Recorrer cada detalle enviado desde el cliente
         for(DetalleFacturaDTO detalleFacturaDTO : listaDetallesFactura) {
-            // Buscar producto en el mapa
-            ProductosEntity productos = mapaProductosEnt.get(detalleFacturaDTO.getId_Producto());
+            // Buscar producto en el mapa -> O(1)
+            ProductosEntity productosEntity = mapaProductosEnt.get(detalleFacturaDTO.getId_Producto());
 
             // Si no existe el producto → error
-            if (productos == null) {
+            if (productosEntity == null) {
                 throw new RuntimeException("Producto no encontrado ID: " + detalleFacturaDTO.getId_Producto());
             }
 
@@ -158,10 +158,10 @@ public class DetalleFacturaServiceImpl implements IDetalleFacturaService {
             DetalleFacturaEntity detalleFacturaEnt = new DetalleFacturaEntity();
             detalleFacturaEnt.setCantProductos(detalleFacturaDTO.getCantProductos());
             detalleFacturaEnt.setFacturaEnt(facturaEnt);
-            detalleFacturaEnt.setProductosEnt(productos);
+            detalleFacturaEnt.setProductosEnt(productosEntity);
 
             // Calcular subtotal
-            Float subtotal  = (float) (detalleFacturaDTO.getCantProductos() * productos.getPrecio());
+            Float subtotal  = (float) (detalleFacturaDTO.getCantProductos() * productosEntity.getPrecio());
             detalleFacturaEnt.setTotal(subtotal );
 
             // Agregar a lista de guardado

@@ -24,7 +24,7 @@ public class UsuarioDTO {
     private String nombre;
     private String apellido;
     private char sexo;
-    private int telefono;
+    private String telefono;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY) // Se permite recibir el id del usuario en el request (POST), pero no se expone en las respuestas JSON (response).
     private String username;
