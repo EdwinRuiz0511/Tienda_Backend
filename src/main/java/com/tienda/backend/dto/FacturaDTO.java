@@ -1,6 +1,6 @@
 package com.tienda.backend.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Getter;
@@ -20,6 +20,8 @@ public class FacturaDTO {
 
     private int id_Factura;
     private float totalFactura;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL) // Solo desaparece si está en null
     private List<DetalleFacturaDTO> listaDetalleFacturaDTO;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY) // Se permite recibir el id del usuario en el request (POST), pero no se expone en las respuestas JSON (response).

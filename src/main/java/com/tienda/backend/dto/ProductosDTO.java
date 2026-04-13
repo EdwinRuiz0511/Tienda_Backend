@@ -1,5 +1,6 @@
 package com.tienda.backend.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.tienda.backend.entity.DetalleFacturaEntity;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,6 +12,9 @@ import java.util.List;
 public class ProductosDTO {
 
     private Long id_Productos;
-    private int precio;
+    private String nombreProducto;
+    private double precio;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL) // Solo desaparece si está en null
     private List<DetalleFacturaEntity> listaDetalleFacturaEnt;
 }
