@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
@@ -86,5 +87,57 @@ public class ProductoServiceImpl implements IProductoService {
         respuesta.setPrecio(guardado.getPrecio());
 
         return respuesta;
+    }
+
+    @Override
+    public List<ProductosDTO> listarProductos() {
+
+        List<ProductosEntity> productosEnt = productoRepository.findAll();
+        List<ProductosDTO> productosDto = new ArrayList<>();
+
+        // ENTITY → DTO (uno por uno)
+        for (ProductosEntity productoEnt : productosEnt) {
+            ProductosDTO productoDto = new ProductosDTO();
+            productoDto.setId_Productos(productoEnt.getId_Productos());
+            productoDto.setNombreProducto(productoEnt.getNombreProducto());
+            productoDto.setPrecio(productoEnt.getPrecio());
+
+            productosDto.add(productoDto);
+        }
+        // DTO → FRONTEND
+        return productosDto;
+    }
+
+    @Override
+    public ProductosDTO actualizarProducto(Long id_Productos, ProductosDTO productosDto) {
+        ProductosEntity productosEnt = productoRepository.findById(id_Productos)
+                .orElseThrow(() -> new RuntimeException("Producto con ID --> "+id_Productos+" No encontrado"));
+
+        // DTO → ENTITY (actualización)
+        productosEnt.setNombreProducto(productosDto.getNombreProducto());
+        productosEnt.setPrecio(productosDto.getPrecio());
+
+        // ENTITY → BASE DE DATOS
+        ProductosEntity productoActualizado = productoRepository.save(productosEnt);
+
+        // ENTITY → DTO
+        ProductosDTO respuesta = new ProductosDTO();
+        respuesta.setId_Productos(productoActualizado.getId_Productos());
+        respuesta.setNombreProducto(productoActualizado.getNombreProducto());
+        respuesta.setPrecio(productoActualizado.getPrecio());
+
+        // DTO -> FRONTEND
+        return respuesta;
+    }
+
+    @Override
+    public void eliminarProducto(Long id_Productos) {
+
+        // Se valida que el usuario exista antes de eliminar
+        ProductosEntity productosEnt = productoRepository.findById(id_Productos)
+                .orElseThrow(() -> new RuntimeException("Producto con ID --> "+id_Productos+" No encontrado"));
+
+        // Se elimina el producto
+        productoRepository.delete(productosEnt);
     }
 }

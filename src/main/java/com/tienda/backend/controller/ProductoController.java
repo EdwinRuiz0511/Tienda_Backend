@@ -3,10 +3,15 @@ package com.tienda.backend.controller;
 import com.tienda.backend.dto.ProductosDTO;
 import com.tienda.backend.service.IProductoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+import java.util.Map;
+
+@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping("/producto")
 public class ProductoController {
@@ -15,14 +20,42 @@ public class ProductoController {
     private IProductoService productoService;
 
     @PostMapping("/upload")
-    public ResponseEntity<String> subirCsv(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<?> subirCsv(@RequestParam("file") MultipartFile file) {
         productoService.guardarCsv(file);
-        return ResponseEntity.ok("CSV cargado correctamente ✅");
+        return ResponseEntity.ok(Map.of("mensaje", "CSV cargado correctamente"));
     }
 
     @PostMapping("/agregarProducto")
     public ResponseEntity<ProductosDTO> agregarProducto(@RequestBody ProductosDTO productosDto) {
         ProductosDTO respuesta = productoService.agregarProducto(productosDto);
         return ResponseEntity.ok(respuesta);
+    }
+
+    @GetMapping("/listarProductos")
+    public ResponseEntity<List<ProductosDTO>> listarProductos() {
+        List<ProductosDTO> listarProductos = productoService.listarProductos();
+
+        return ResponseEntity.ok(listarProductos);
+    }
+
+    @PutMapping("/actualizarProducto/{id_Productos}")
+    public ResponseEntity<?> actualizarProducto(@PathVariable Long id_Productos, @RequestBody ProductosDTO productosDto) {
+        try {
+            ProductosDTO productosActualizado = productoService.actualizarProducto(id_Productos, productosDto);
+            return ResponseEntity.ok(productosActualizado);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error: "+e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/eliminarProducto/{id_Productos}")
+    public ResponseEntity<String> eliminarProducto (@PathVariable Long id_Productos) {
+        try {
+            productoService.eliminarProducto(id_Productos);
+            return ResponseEntity.noContent().build();
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error: "+e.getMessage());
+        }
     }
 }
