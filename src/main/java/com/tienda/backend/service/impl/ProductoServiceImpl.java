@@ -44,6 +44,7 @@ public class ProductoServiceImpl implements IProductoService {
                 ProductosEntity productoEnt = new ProductosEntity();
                 productoEnt.setNombreProducto(fila[0]);
                 productoEnt.setPrecio(Double.parseDouble(fila[1]));
+                productoEnt.setCategoria(fila[2]);
 
                 // 👇 Cada producto se envía a un hilo del pool
                 executor.execute(() -> {
@@ -76,6 +77,7 @@ public class ProductoServiceImpl implements IProductoService {
         ProductosEntity productosEnt = new ProductosEntity();
         productosEnt.setNombreProducto(productosDto.getNombreProducto());
         productosEnt.setPrecio(productosDto.getPrecio());
+        productosEnt.setCategoria(productosDto.getCategoria());
 
         //Guardamos en base de datos
         ProductosEntity guardado = productoRepository.save(productosEnt);
@@ -85,6 +87,7 @@ public class ProductoServiceImpl implements IProductoService {
         respuesta.setId_Productos(guardado.getId_Productos());
         respuesta.setNombreProducto(guardado.getNombreProducto());
         respuesta.setPrecio(guardado.getPrecio());
+        respuesta.setCategoria(guardado.getCategoria());
 
         return respuesta;
     }
@@ -101,6 +104,7 @@ public class ProductoServiceImpl implements IProductoService {
             productoDto.setId_Productos(productoEnt.getId_Productos());
             productoDto.setNombreProducto(productoEnt.getNombreProducto());
             productoDto.setPrecio(productoEnt.getPrecio());
+            productoDto.setCategoria(productoEnt.getCategoria());
 
             productosDto.add(productoDto);
         }
@@ -116,6 +120,8 @@ public class ProductoServiceImpl implements IProductoService {
         // DTO → ENTITY (actualización)
         productosEnt.setNombreProducto(productosDto.getNombreProducto());
         productosEnt.setPrecio(productosDto.getPrecio());
+        productosEnt.setCategoria(productosDto.getCategoria());
+
 
         // ENTITY → BASE DE DATOS
         ProductosEntity productoActualizado = productoRepository.save(productosEnt);
@@ -125,6 +131,8 @@ public class ProductoServiceImpl implements IProductoService {
         respuesta.setId_Productos(productoActualizado.getId_Productos());
         respuesta.setNombreProducto(productoActualizado.getNombreProducto());
         respuesta.setPrecio(productoActualizado.getPrecio());
+        productosEnt.setCategoria(productosDto.getCategoria());
+
 
         // DTO -> FRONTEND
         return respuesta;

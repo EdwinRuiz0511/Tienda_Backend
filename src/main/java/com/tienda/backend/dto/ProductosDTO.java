@@ -14,6 +14,7 @@ public class ProductosDTO {
     private Long id_Productos;
     private String nombreProducto;
     private double precio;
+    private String categoria;
 
     @JsonInclude(JsonInclude.Include.NON_NULL) // Solo desaparece si está en null
     private List<DetalleFacturaEntity> listaDetalleFacturaEnt;

@@ -29,6 +29,9 @@ public class ProductosEntity {
     @Column(name = "precio")
     private double precio;
 
+    @Column(name = "categoria")
+    private String categoria;
+
     @OneToMany(mappedBy = "productosEnt", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JsonIgnore
     private List<DetalleFacturaEntity> listaDetalleFacturaEnt = new ArrayList<>();
