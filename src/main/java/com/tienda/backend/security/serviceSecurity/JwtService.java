@@ -1,25 +1,25 @@
 package com.tienda.backend.security.serviceSecurity;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.*;
+import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
 
+@Slf4j
 @Service
 public class JwtService {
 
-    // Minimo 32 acaractereres
-    private static final String SECRET_KEY = "mi_clave_secreta_super_segura_para_jwt_123456";
+    @Value("${jwt.secret.key}")
+    private String secretKey;
 
-    private SecretKey getSigningKey() {
-        return Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
-    }
+    @Value("${jwt.time.expiration}")
+    private long timeExpiration;
 
     // 🔐 Generar token
     public String generarToken(String username, String rol) {
@@ -27,15 +27,21 @@ public class JwtService {
                 .subject(username)                                                                          // Aquí guardamos el username del usuario autenticado.
                 .claim("role", rol)
                 .issuedAt(new Date())                                                                       // Fecha en que el token fue creado.
-                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60)) //1 hora                 // Fecha de expiración.
-                .signWith(getSigningKey())                                                                  // Firma el token con tu clave secreta.
+                .expiration(new Date(System.currentTimeMillis() + timeExpiration))//30min                   // Fecha de expiración.
+                .signWith(obtenerClaveSecreta(), SignatureAlgorithm.HS256)                                  // Firma el token con tu clave secreta.
                 .compact();                                                                                 // Empaqueta todo en un Sprinf tipo: eyJhbGciOiJIUzI1NiJ9...
+    }
+
+    // Obtener firma del token
+    public SecretKey obtenerClaveSecreta() {
+        byte[] keyBytes = Decoders.BASE64.decode(secretKey);                                                // Convierte el string Base64 a bytes
+        return Keys.hmacShaKeyFor(keyBytes);
     }
 
     // Método que recibe un JWT y devuelve sus datos internos (claims)
     private Claims extraerClaims(String token) {
         return Jwts.parser()
-                .verifyWith(getSigningKey())
+                .verifyWith(obtenerClaveSecreta())
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
@@ -55,19 +61,19 @@ public class JwtService {
             return !claims.getExpiration().before(new Date());
 
         } catch (ExpiredJwtException e) {                                                   // El usuario debe volver a loguearse
-            System.out.println("JWT expirado: " + e.getMessage());
+            log.warn("JWT expirado: {}", e.getMessage());
 
         } catch (MalformedJwtException e) {                                                 // Token corrupto o manipulado
-            System.out.println("JWT mal formado: " + e.getMessage());
+            log.error("JWT mal formado: {}", e.getMessage());
 
         } catch (SignatureException e) {                                                    // Intento de falsificación
-            System.out.println("Firma JWT inválida: " + e.getMessage());
+            log.error("Firma invalida: {}", e.getMessage());
 
         } catch (IllegalArgumentException e) {                                              // Error de cliente
-            System.out.println("Token vacío o null: " + e.getMessage());
+            log.error("Token vacio o null: {}", e.getMessage());
 
         } catch (Exception e) {                                                             // Error interno
-            System.out.println("Error inesperado validando JWT: " + e.getMessage());
+            log.error("Error inesperado validando JWT: {}", e);
         }
 
         return false;
