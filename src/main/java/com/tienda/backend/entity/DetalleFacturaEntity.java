@@ -29,7 +29,7 @@ public class DetalleFacturaEntity {
     @JoinColumn(name = "id_Factura") //FK
     private FacturaEntity facturaEnt;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_Productos") //Fk
     private ProductosEntity productosEnt;
 

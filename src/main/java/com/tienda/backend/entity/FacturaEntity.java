@@ -7,8 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -30,9 +30,9 @@ public class FacturaEntity {
     @JoinColumn(name = "id_Usuario") //FK
     private UsuarioEntity usuarioEnt;
 
-    @OneToMany(mappedBy = "facturaEnt", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "facturaEnt", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
-    private List<DetalleFacturaEntity> listaDetalleFacturaEnt = new ArrayList<>();
+    private Set<DetalleFacturaEntity> listaDetalleFacturaEnt = new HashSet<>();
 
 }
 

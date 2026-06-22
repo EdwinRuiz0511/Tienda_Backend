@@ -7,7 +7,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping ("/usuarios")
@@ -36,10 +38,18 @@ public class UsuarioController {
     }
 
     @GetMapping("/listarUsuariosConFacturasYDetalles/{idUsuario}")
-    public ResponseEntity<UsuarioDTO> ListarUsuariosConFactuYDetallPorId (@PathVariable Long idUsuario) {
-        UsuarioDTO usuarioDto = usuarioService.listar_Usuarios_Factu_Detall_PorId(idUsuario);
+    public ResponseEntity<?> ListarUsuariosConFactuYDetallPorId (@PathVariable Long idUsuario) {
+        try {
+            UsuarioDTO usuarioDto = usuarioService.listar_Usuarios_Factu_Detall_PorId(idUsuario);
+            return ResponseEntity.ok(usuarioDto);
 
-        return ResponseEntity.ok(usuarioDto);
+        } catch (Exception e) {
+
+            Map<String, String> error = new HashMap<>();
+            error.put("mensaje", e.getMessage());
+
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+        }
     }
 
 

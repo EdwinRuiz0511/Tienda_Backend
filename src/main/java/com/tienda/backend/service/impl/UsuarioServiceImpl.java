@@ -84,7 +84,8 @@ public class UsuarioServiceImpl implements IUsuarioService {
     // Convierte un UsuarioEntity en UsuarioDTO con Facturas y Detalles
     private UsuarioDTO entityToDto3(UsuarioEntity usuarioEnt) {
         UsuarioDTO usuarioDto = new UsuarioDTO();
-        // Copiamos los datos básicos del usuario (Entity → DTO)
+
+        // NIVEL 1: Datos del Usuario (Entity → DTO)
         usuarioDto.setId_Usuario(usuarioEnt.getId_Usuario());
         usuarioDto.setNombre(usuarioEnt.getNombre());
         usuarioDto.setApellido(usuarioEnt.getApellido());
@@ -94,7 +95,7 @@ public class UsuarioServiceImpl implements IUsuarioService {
         // Inicializamos la lista donde se almacenarán las facturas
         usuarioDto.setListFacturaDTO(new ArrayList<>());
 
-        // Recorre las facturas del usuario
+        // NIVEL 2: Recorrer Facturas del Usuario
         for (FacturaEntity facturaEnt : usuarioEnt.getListaFacturaEnt()) {
             FacturaDTO facturaDto = new FacturaDTO();
             facturaDto.setId_Factura(facturaEnt.getId_Factura());
@@ -103,7 +104,7 @@ public class UsuarioServiceImpl implements IUsuarioService {
             // Inicializamos la lista de detalles de la factura
             facturaDto.setListaDetalleFacturaDTO(new ArrayList<>());
 
-            // Recorre los detalles de cada factura
+            // NIVEL 3: Recorrer Detalles de las Facturas del Usuario
             for (DetalleFacturaEntity detalleFacturaEnt : facturaEnt.getListaDetalleFacturaEnt()) {
                 DetalleFacturaDTO detalleFacturaDto = new DetalleFacturaDTO();
                 detalleFacturaDto.setId_DetalleFac(detalleFacturaEnt.getId_DetalleFac());                               // Toma los datos de la factura de la base de datos y pásalos al objeto que se enviará al cliente.
@@ -113,6 +114,7 @@ public class UsuarioServiceImpl implements IUsuarioService {
                 detalleFacturaDto.setId_Factura(facturaEnt.getId_Factura());
                 detalleFacturaDto.setId_Producto(detalleFacturaEnt.getProductosEnt().getId_Productos());
                 detalleFacturaDto.setNombreProducto(detalleFacturaEnt.getProductosEnt().getNombreProducto());
+                detalleFacturaDto.setCategoria(detalleFacturaEnt.getProductosEnt().getCategoria());
                 detalleFacturaDto.setPrecio(detalleFacturaEnt.getProductosEnt().getPrecio());
                 // detalleFacturaDto.setId_Usuario(facturaEnt.getUsuarioEnt().getId_Usuario());
 
@@ -175,7 +177,7 @@ public class UsuarioServiceImpl implements IUsuarioService {
     // Metodo para listar las Facturas de un Usuario por su ID
     @Override
     public UsuarioDTO listar_Usuarios_Factu_PorId(Long id_Usuario) {
-        Optional<UsuarioEntity> usuarioEntityOpc = usuarioRepository.findById(id_Usuario);
+        Optional<UsuarioEntity> usuarioEntityOpc = usuarioRepository.findByIdConFacturas(id_Usuario);
         UsuarioDTO usuarioDto = null;
 
         if(usuarioEntityOpc.isPresent()){
@@ -188,14 +190,10 @@ public class UsuarioServiceImpl implements IUsuarioService {
     //Metodo para listar un Usuario con sus Facturas y Detalles por su ID
     @Override
     public UsuarioDTO listar_Usuarios_Factu_Detall_PorId(Long id_Usuario) {
-        Optional<UsuarioEntity> usuarioEntityOpc = usuarioRepository.findById(id_Usuario);
-        UsuarioDTO usuarioDto = null;
+        UsuarioEntity usuarioEnt = usuarioRepository.findByIdConFacturasYDetalles(id_Usuario)
+                .orElseThrow(() -> new RuntimeException("Usuario con ID -> "+id_Usuario+ " No encontrado"));
 
-        if (usuarioEntityOpc.isPresent()) {
-            UsuarioEntity usuarioEnt = usuarioEntityOpc.get();
-            usuarioDto = entityToDto3(usuarioEnt);
-        }
-        return usuarioDto;
+        return entityToDto3(usuarioEnt);
     }
 
     @Override

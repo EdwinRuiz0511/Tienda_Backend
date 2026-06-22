@@ -7,8 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -42,12 +42,15 @@ public class UsuarioEntity {
     @Column(name = "password", nullable = false)
     private String password;
 
-    @OneToMany(mappedBy = "usuarioEnt", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    // Relaciones
+
+    // Relacion con la tabala FacturaEntity
+    @OneToMany(mappedBy = "usuarioEnt", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
-    List<FacturaEntity> listaFacturaEnt = new ArrayList<>();
+    Set<FacturaEntity> listaFacturaEnt = new HashSet<>();
 
     //Relacion con la tabla RolEntity
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_Rol")
     private RolEntity rolEnt;
 }
