@@ -4,6 +4,7 @@ import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.tienda.backend.dto.ProductosDTO;
 import com.tienda.backend.entity.ProductosEntity;
+import com.tienda.backend.mapper.IProductoMapper;
 import com.tienda.backend.repository.IProductosRepository;
 import com.tienda.backend.service.IProductoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
@@ -24,6 +24,9 @@ public class ProductoServiceImpl implements IProductoService {
 
     @Autowired
     private IProductosRepository productoRepository;
+
+    @Autowired
+    private IProductoMapper productoMapper;
 
     @Async
     public void guardarCsv(MultipartFile file) {
@@ -74,20 +77,13 @@ public class ProductoServiceImpl implements IProductoService {
         }
 
         // Creamos el producto dto -> entity
-        ProductosEntity productosEnt = new ProductosEntity();
-        productosEnt.setNombreProducto(productosDto.getNombreProducto());
-        productosEnt.setPrecio(productosDto.getPrecio());
-        productosEnt.setCategoria(productosDto.getCategoria());
+        ProductosEntity productosEnt = productoMapper.toEntity(productosDto);
 
         //Guardamos en base de datos
         ProductosEntity guardado = productoRepository.save(productosEnt);
 
         // entity -> dto
-        ProductosDTO respuesta = new ProductosDTO();
-        respuesta.setId_Productos(guardado.getId_Productos());
-        respuesta.setNombreProducto(guardado.getNombreProducto());
-        respuesta.setPrecio(guardado.getPrecio());
-        respuesta.setCategoria(guardado.getCategoria());
+        ProductosDTO respuesta = productoMapper.toDTO(guardado);
 
         return respuesta;
     }
@@ -96,20 +92,9 @@ public class ProductoServiceImpl implements IProductoService {
     public List<ProductosDTO> listarProductos() {
 
         List<ProductosEntity> productosEnt = productoRepository.findAll();
-        List<ProductosDTO> productosDto = new ArrayList<>();
 
-        // ENTITY → DTO (uno por uno)
-        for (ProductosEntity productoEnt : productosEnt) {
-            ProductosDTO productoDto = new ProductosDTO();
-            productoDto.setId_Productos(productoEnt.getId_Productos());
-            productoDto.setNombreProducto(productoEnt.getNombreProducto());
-            productoDto.setPrecio(productoEnt.getPrecio());
-            productoDto.setCategoria(productoEnt.getCategoria());
-
-            productosDto.add(productoDto);
-        }
         // DTO → FRONTEND
-        return productosDto;
+        return productoMapper.toDTOList(productosEnt);
     }
 
     @Override
@@ -118,21 +103,13 @@ public class ProductoServiceImpl implements IProductoService {
                 .orElseThrow(() -> new RuntimeException("Producto con ID --> "+id_Productos+" No encontrado"));
 
         // DTO → ENTITY (actualización)
-        productosEnt.setNombreProducto(productosDto.getNombreProducto());
-        productosEnt.setPrecio(productosDto.getPrecio());
-        productosEnt.setCategoria(productosDto.getCategoria());
-
+        productoMapper.actualizarProducto(productosDto, productosEnt);
 
         // ENTITY → BASE DE DATOS
         ProductosEntity productoActualizado = productoRepository.save(productosEnt);
 
         // ENTITY → DTO
-        ProductosDTO respuesta = new ProductosDTO();
-        respuesta.setId_Productos(productoActualizado.getId_Productos());
-        respuesta.setNombreProducto(productoActualizado.getNombreProducto());
-        respuesta.setPrecio(productoActualizado.getPrecio());
-        productosEnt.setCategoria(productosDto.getCategoria());
-
+        ProductosDTO respuesta = productoMapper.toDTO(productoActualizado);
 
         // DTO -> FRONTEND
         return respuesta;

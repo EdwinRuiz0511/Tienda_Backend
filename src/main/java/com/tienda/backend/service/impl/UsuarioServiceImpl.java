@@ -53,6 +53,7 @@ public class UsuarioServiceImpl implements IUsuarioService {
         usuarioDto.setSexo(usuarioEnt.getSexo());
         usuarioDto.setTelefono(usuarioEnt.getTelefono());
         usuarioDto.setUsername(usuarioEnt.getUsername());
+        usuarioDto.setNombreRol(usuarioEnt.getRolEnt().getNombreRol());
 
         return usuarioDto;
     }
@@ -65,6 +66,8 @@ public class UsuarioServiceImpl implements IUsuarioService {
         usuarioDto.setApellido(usuarioEnt.getApellido());
         usuarioDto.setSexo(usuarioEnt.getSexo());
         usuarioDto.setTelefono(usuarioEnt.getTelefono());
+        usuarioDto.setUsername(usuarioEnt.getUsername());
+        usuarioDto.setNombreRol(usuarioEnt.getRolEnt().getNombreRol());
 
         // Inicializamos la lista donde se almacenarán las facturas
         usuarioDto.setListFacturaDTO(new ArrayList<>());
@@ -91,6 +94,8 @@ public class UsuarioServiceImpl implements IUsuarioService {
         usuarioDto.setApellido(usuarioEnt.getApellido());
         usuarioDto.setSexo(usuarioEnt.getSexo());
         usuarioDto.setTelefono(usuarioEnt.getTelefono());
+        usuarioDto.setUsername(usuarioEnt.getUsername());
+        usuarioDto.setNombreRol(usuarioEnt.getRolEnt().getNombreRol());
 
         // Inicializamos la lista donde se almacenarán las facturas
         usuarioDto.setListFacturaDTO(new ArrayList<>());
@@ -112,7 +117,7 @@ public class UsuarioServiceImpl implements IUsuarioService {
                 detalleFacturaDto.setTotal(detalleFacturaEnt.getTotal());
 
                 detalleFacturaDto.setId_Factura(facturaEnt.getId_Factura());
-                detalleFacturaDto.setId_Producto(detalleFacturaEnt.getProductosEnt().getId_Productos());
+                detalleFacturaDto.setId_Producto(detalleFacturaEnt.getProductosEnt().getId_Producto());
                 detalleFacturaDto.setNombreProducto(detalleFacturaEnt.getProductosEnt().getNombreProducto());
                 detalleFacturaDto.setCategoria(detalleFacturaEnt.getProductosEnt().getCategoria());
                 detalleFacturaDto.setPrecio(detalleFacturaEnt.getProductosEnt().getPrecio());

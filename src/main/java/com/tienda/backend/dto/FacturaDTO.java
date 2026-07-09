@@ -19,7 +19,7 @@ import java.util.List;
 public class FacturaDTO {
 
     private int id_Factura;
-    private float totalFactura;
+    private Float totalFactura;
 
     @JsonInclude(JsonInclude.Include.NON_NULL) // Solo desaparece si está en null
     private List<DetalleFacturaDTO> listaDetalleFacturaDTO;

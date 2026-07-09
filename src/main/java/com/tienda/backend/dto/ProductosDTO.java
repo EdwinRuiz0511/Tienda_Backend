@@ -10,7 +10,7 @@ import java.util.List;
 @Setter
 public class ProductosDTO {
 
-    private Long id_Productos;
+    private Long id_Producto;
     private String nombreProducto;
     private double precio;
     private String categoria;
