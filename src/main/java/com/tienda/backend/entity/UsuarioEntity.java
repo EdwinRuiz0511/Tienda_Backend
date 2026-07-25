@@ -47,7 +47,7 @@ public class UsuarioEntity {
     // Relacion con la tabala FacturaEntity
     @OneToMany(mappedBy = "usuarioEnt", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
-    Set<FacturaEntity> listaFacturaEnt = new HashSet<>();
+    Set<FacturaEntity> listaDeFacturas = new HashSet<>();
 
     //Relacion con la tabla RolEntity
     @ManyToOne(fetch = FetchType.EAGER)
@@ -55,20 +55,3 @@ public class UsuarioEntity {
     private RolEntity rolEnt;
 }
 
-/*
-@OneToMany -> Un Usuario puede tener MUCHAS Facturas
-
-cascade = CascadeType.ALL -> Lo que le pase al usuario, se replica en sus facturas
-
-fetch = FetchType.EAGER ->
-
-mappedBy = "usuarioEnt" -> La relación se controla desde la entidad FacturaEntity, específicamente
-                           desde el atributo usuarioEnt. En otras palabras, UsuarioEntity NO tiene la FK, La FK está en FacturaEntity
-
-List<FacturaEntity> facturaEnt = new ArrayList<>();
-        Hay lista porque es 1 a muchos
-        “Muchos” en Java = List
-        La FK NO está en la lista
-        La lista NO crea datos sola
-        Sirve para navegar la relación
-*/

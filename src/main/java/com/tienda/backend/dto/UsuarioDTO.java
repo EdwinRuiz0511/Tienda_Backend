@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -31,11 +31,11 @@ public class UsuarioDTO {
     //@JsonProperty(access = JsonProperty.Access.WRITE_ONLY) // Se permite recibir el id del usuario en el request (POST), pero no se expone en las respuestas JSON (response).
     private String username;
 
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY) // Se permite recibir el id del usuario en el request (POST), pero no se expone en las respuestas JSON (response).
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY) // Se permite recibir el password del usuario en el request (POST), pero no se expone en las respuestas JSON (response).
     private  String password;
 
     private String nombreRol;
 
     @JsonInclude(JsonInclude.Include.NON_NULL) // Solo desaparece si está en null
-    private List<FacturaDTO> listaFacturaDTO;
+    private Set<FacturaDTO> listaDeFacturas;
 }

@@ -32,24 +32,6 @@ public class FacturaEntity {
 
     @OneToMany(mappedBy = "facturaEnt", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
-    private Set<DetalleFacturaEntity> listaDetalleFacturaEnt = new HashSet<>();
+    private Set<DetalleFacturaEntity> listaDetallesFacturas = new HashSet<>();
 
 }
-
-/*
-@ManyToOne -> relación MUCHOS a UNO, Muchas Facturas pertenecen a UN Usuario
-              AQUÍ vive la FK, Regla: La FK siempre está en el lado MANY
-
-
-@JoinColumn(name = "identificacion_usuario") -> Nombre real de la columna en la tabla factura
-                                                factura
-                                                -------------------------
-                                                id_factura
-                                                total_factura
-                                                identificacion_usuario  ← FK
-
-                                                Apunta a: usuario.identificacion
-
-
-fetch = FetchType.EAGER -> Cuando traes una factura, Hibernate trae también su usuario
-*/

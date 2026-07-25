@@ -182,8 +182,10 @@ public class DetalleFacturaServiceImpl implements IDetalleFacturaService {
         // 12. Convertir respuesta entity -> DTO
         return detallesGuardar.stream().map(detalleEnt -> {
             DetalleFacturaDTO detalleFacturaDTO = new DetalleFacturaDTO();
+
             detalleFacturaDTO.setId_DetalleFac(detalleEnt.getId_DetalleFac());
             detalleFacturaDTO.setNombreProducto(detalleEnt.getProductosEnt().getNombreProducto());
+            detalleFacturaDTO.setCategoria(detalleEnt.getProductosEnt().getCategoria());
             detalleFacturaDTO.setPrecio(detalleEnt.getProductosEnt().getPrecio());
             detalleFacturaDTO.setCantProductos(detalleEnt.getCantProductos());
             detalleFacturaDTO.setTotal(detalleEnt.getTotal());

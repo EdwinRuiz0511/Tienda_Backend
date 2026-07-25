@@ -14,13 +14,13 @@ public interface IUsuarioRepository extends JpaRepository <UsuarioEntity, Long> 
     Optional<UsuarioEntity> findByUsername(String username);
 
     // Trae usuario + facturas en una sola consulta
-    @Query("SELECT u FROM UsuarioEntity u LEFT JOIN FETCH u.listaFacturaEnt WHERE u.id_Usuario = :id")
+    @Query("SELECT u FROM UsuarioEntity u LEFT JOIN FETCH u.listaDeFacturas WHERE u.id_Usuario = :id")
     Optional<UsuarioEntity> findByIdConFacturas(@Param("id") Long id);
 
     // Trae usuario + facturas + detalles en una sola consulta
     @Query("SELECT DISTINCT u FROM UsuarioEntity u " +
-            "LEFT JOIN FETCH u.listaFacturaEnt f " +
-            "LEFT JOIN FETCH f.listaDetalleFacturaEnt d " +
+            "LEFT JOIN FETCH u.listaDeFacturas f " +
+            "LEFT JOIN FETCH f.listaDetallesFacturas d " +
             "LEFT JOIN FETCH d.productosEnt " +
             "WHERE u.id_Usuario = :id")
     Optional<UsuarioEntity> findByIdConFacturasYDetalles(@Param("id") Long id);

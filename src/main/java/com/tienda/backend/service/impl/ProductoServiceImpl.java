@@ -99,6 +99,7 @@ public class ProductoServiceImpl implements IProductoService {
 
     @Override
     public ProductosDTO actualizarProducto(Long id_Productos, ProductosDTO productosDto) {
+
         ProductosEntity productosEnt = productoRepository.findById(id_Productos)
                 .orElseThrow(() -> new RuntimeException("Producto con ID --> "+id_Productos+" No encontrado"));
 

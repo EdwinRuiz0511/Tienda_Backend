@@ -47,7 +47,7 @@ public class FacturaServiceImpl implements IFacturaService {
 
         // 2. Crear la Factura, DTO → Entity
         FacturaEntity facturaEnt = new FacturaEntity();
-        //facturaEnt.setTotalFactura(facturaDto.getTotalFactura()); --> Esto lo calculamos y lo guardamos en BD al momento de crear el DetalleFacturaServiceImpl
+        facturaEnt.setTotalFactura(facturaDto.getTotalFactura()); //--> Esto lo calculamos y lo guardamos en BD al momento de crear el DetalleFacturaServiceImpl
 
         // 3. Asignar el Usuario
         facturaEnt.setUsuarioEnt(usuarioEnt); //FK
@@ -56,8 +56,12 @@ public class FacturaServiceImpl implements IFacturaService {
         facturaRepository.save(facturaEnt);
 
         // 5. Retornar DTO, Entity → DTO
-        facturaDto.setId_Factura(facturaEnt.getId_Factura());
-        return facturaDto;
+        FacturaDTO respuesta = new FacturaDTO();
+        respuesta.setId_Factura(facturaEnt.getId_Factura());
+        respuesta.setId_Usuario(facturaEnt.getUsuarioEnt().getId_Usuario());
+        respuesta.setTotalFactura(facturaEnt.getTotalFactura());
+
+        return respuesta;
     }
 
     @Override
