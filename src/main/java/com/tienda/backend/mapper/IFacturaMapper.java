@@ -2,11 +2,9 @@ package com.tienda.backend.mapper;
 
 import com.tienda.backend.dto.FacturaDTO;
 import com.tienda.backend.entity.FacturaEntity;
-import org.mapstruct.IterableMapping;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Named;
+import org.mapstruct.*;
 
+import java.util.List;
 import java.util.Set;
 
 // uses = {IDetalleFacturaMapper.class} le indica a MapStruct que cuando
@@ -16,6 +14,11 @@ import java.util.Set;
 // código duplicado para la misma conversión.
 @Mapper(componentModel = "spring", uses = {IDetalleFacturaMapper.class})
 public interface IFacturaMapper {
+
+    @Mapping(target = "id_Factura", ignore = true)
+    @Mapping(target = "listaDetallesFacturas", ignore = true)
+    @Mapping(target = "usuarioEnt", ignore = true)
+    FacturaEntity toEntity(FacturaDTO facturaDto);
 
     // Convierte únicamente los datos básicos de la factura. (sin incluir sus detalles).
     @Named("facturaSinDetalles")
@@ -27,6 +30,16 @@ public interface IFacturaMapper {
     @Named("facturaConDetalles")
     @Mapping(target = "id_Usuario", source = "usuarioEnt.id_Usuario")
     FacturaDTO toDTOConDetalles(FacturaEntity facturaEnt);
+
+    // Ignora los campos que no deben modificarse. Actualiza únicamente los datos editables de la factura.
+    @Mapping(target = "id_Factura", ignore = true)
+    @Mapping(target = "listaDetallesFacturas", ignore = true)
+    @Mapping(target = "usuarioEnt", ignore = true)
+    void actualizarFactura(FacturaDTO facturaDto, @MappingTarget FacturaEntity facturaEnt);
+
+    // Convierte una lista de facturas con información básica.
+    @IterableMapping(qualifiedByName = "facturaSinDetalles")
+    List<FacturaDTO> toDTOListBasico(List<FacturaEntity> facturaEntities);
 
     // Convierte un conjunto de facturas con toda su información.
     @IterableMapping(qualifiedByName = "facturaConDetalles")
