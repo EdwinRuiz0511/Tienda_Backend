@@ -45,7 +45,7 @@ public class UsuarioEntity {
     // Relaciones
 
     // Relacion con la tabala FacturaEntity
-    @OneToMany(mappedBy = "usuarioEnt", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "usuarioEnt", fetch = FetchType.LAZY)
     @JsonIgnore
     Set<FacturaEntity> listaDeFacturas = new HashSet<>();
 

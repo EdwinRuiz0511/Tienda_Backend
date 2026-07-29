@@ -4,6 +4,7 @@ import com.tienda.backend.dto.DetalleFacturaDTO;
 import com.tienda.backend.entity.DetalleFacturaEntity;
 import com.tienda.backend.entity.FacturaEntity;
 import com.tienda.backend.entity.ProductosEntity;
+import com.tienda.backend.mapper.IDetalleFacturaMapper;
 import com.tienda.backend.repository.IDetalleFacturaRepository;
 import com.tienda.backend.repository.IFacturaRepository;
 import com.tienda.backend.repository.IProductosRepository;
@@ -30,26 +31,8 @@ public class DetalleFacturaServiceImpl implements IDetalleFacturaService {
     @Autowired
     private IProductosRepository productosRepository;
 
-
-
-    // Frontend → DTO → Entity → Base de datos
-    private DetalleFacturaEntity dtoToEntit(DetalleFacturaDTO detalleFacturaDto) {
-        DetalleFacturaEntity detalleFacturaEnt = new DetalleFacturaEntity();
-        detalleFacturaEnt.setCantProductos(detalleFacturaDto.getCantProductos());
-        detalleFacturaEnt.setTotal(detalleFacturaDto.getTotal());
-
-        return detalleFacturaEnt;
-    }
-
-    // Base de datos → Entity → DTO → frontend
-    private DetalleFacturaDTO entityToDto(DetalleFacturaEntity detalleFacturaEnt) {
-        DetalleFacturaDTO detalleFacturaDto = new DetalleFacturaDTO();
-        detalleFacturaDto.setId_DetalleFac(detalleFacturaEnt.getId_DetalleFac());
-        detalleFacturaDto.setCantProductos(detalleFacturaEnt.getCantProductos());
-        detalleFacturaDto.setTotal(detalleFacturaEnt.getTotal());
-
-        return detalleFacturaDto;
-    }
+    @Autowired
+    IDetalleFacturaMapper iDetalleFacturaMapper;
 
     //---------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -85,18 +68,10 @@ public class DetalleFacturaServiceImpl implements IDetalleFacturaService {
         }
         float nuevoTotal = totalActual + total;
 
-        facturaEnt.setTotalFactura(nuevoTotal);
-        facturaRepository.save(facturaEnt);
+        facturaRepository.actualizarTotal(facturaEnt.getId_Factura(), nuevoTotal);
 
         // Pasar de Entity -> DTO
-        DetalleFacturaDTO respuesta = new DetalleFacturaDTO();
-        respuesta.setId_DetalleFac(guardado.getId_DetalleFac());
-        respuesta.setNombreProducto(productosEnt.getNombreProducto());
-        respuesta.setPrecio(productosEnt.getPrecio());
-        respuesta.setCantProductos(guardado.getCantProductos());
-        respuesta.setTotal(guardado.getTotal());
-        respuesta.setId_Producto(productosEnt.getId_Producto());
-        respuesta.setId_Factura(facturaEnt.getId_Factura());
+        DetalleFacturaDTO respuesta = iDetalleFacturaMapper.toDTOBasico(guardado);
 
         return respuesta;
     }
@@ -175,24 +150,26 @@ public class DetalleFacturaServiceImpl implements IDetalleFacturaService {
         detalleFacturaRepository.saveAll(detallesGuardar);
 
         // 11. Actualizar el total en la tabla de BD Factura
-        facturaEnt.setTotalFactura(totalFactura);
-        facturaRepository.save(facturaEnt);
-
+        //facturaEnt.setTotalFactura(totalFactura);
+        facturaRepository.actualizarTotal(facturaId, totalFactura);
 
         // 12. Convertir respuesta entity -> DTO
-        return detallesGuardar.stream().map(detalleEnt -> {
-            DetalleFacturaDTO detalleFacturaDTO = new DetalleFacturaDTO();
+        return detallesGuardar
+                .stream()
+                .map(detalleEnt -> {
 
-            detalleFacturaDTO.setId_DetalleFac(detalleEnt.getId_DetalleFac());
-            detalleFacturaDTO.setNombreProducto(detalleEnt.getProductosEnt().getNombreProducto());
-            detalleFacturaDTO.setCategoria(detalleEnt.getProductosEnt().getCategoria());
-            detalleFacturaDTO.setPrecio(detalleEnt.getProductosEnt().getPrecio());
-            detalleFacturaDTO.setCantProductos(detalleEnt.getCantProductos());
-            detalleFacturaDTO.setTotal(detalleEnt.getTotal());
-            detalleFacturaDTO.setId_Producto(detalleEnt.getProductosEnt().getId_Producto());
-            detalleFacturaDTO.setId_Factura(detalleEnt.getFacturaEnt().getId_Factura());
-            return detalleFacturaDTO;
-        }).collect(Collectors.toList());
+                    DetalleFacturaDTO detalleFacturaDTO = new DetalleFacturaDTO();
+
+                    detalleFacturaDTO.setId_DetalleFac(detalleEnt.getId_DetalleFac());
+                    detalleFacturaDTO.setNombreProducto(detalleEnt.getProductosEnt().getNombreProducto());
+                    detalleFacturaDTO.setCategoria(detalleEnt.getProductosEnt().getCategoria());
+                    detalleFacturaDTO.setPrecio(detalleEnt.getProductosEnt().getPrecio());
+                    detalleFacturaDTO.setCantProductos(detalleEnt.getCantProductos());
+                    detalleFacturaDTO.setTotal(detalleEnt.getTotal());
+                    detalleFacturaDTO.setId_Producto(detalleEnt.getProductosEnt().getId_Producto());
+                    detalleFacturaDTO.setId_Factura(detalleEnt.getFacturaEnt().getId_Factura());
+                    return detalleFacturaDTO;
+                }).collect(Collectors.toList());
     }
 }
 
@@ -317,7 +294,7 @@ METODO agregarListaDeTallesFactura REFACTORIZADO, P
     private List<DetalleFacturaDTO> convertirADTO(List<DetalleFacturaEntity> detalles) {
 
         return detalles.stream().map(det -> {
-            DetalleFacturaDTO dto = new DetalleFacturaDTO();
+            DetalleFact|raDTO dto = new DetalleFacturaDTO();
             dto.setId_DetalleFac(det.getId_DetalleFac());
             dto.setCantProductos(det.getCantProductos());
             dto.setTotal(det.getTotal());

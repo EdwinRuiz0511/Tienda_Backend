@@ -61,7 +61,7 @@ public class AuthController {
     public ResponseEntity<?> resgistrarUsuario(@Valid @RequestBody RegisterRequestDTO registerRequestDTO) {
 
         usuarioService.registrarUsuario(registerRequestDTO);
-        return ResponseEntity.ok().body(Map.of(
-                "mensaje", "✅ Usuario registrado correctamente"));
+
+        return ResponseEntity.ok().body(Map.of("mensaje", "✅ Usuario registrado correctamente"));
     }
 }

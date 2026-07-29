@@ -51,7 +51,7 @@ public class FacturaServiceImpl implements IFacturaService {
     public List<FacturaDTO> listarFacturasDto() {
 
         // Listamos todas las Facturas desde la BD
-        List<FacturaEntity> facturasEnt = facturaRepository.findAll();
+        List<FacturaEntity> facturasEnt = facturaRepository.findAllConUsuario();
 
         // DTO → FRONTEND
         return iFacturaMapper.toDTOListBasico(facturasEnt);

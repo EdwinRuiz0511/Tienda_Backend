@@ -14,7 +14,8 @@ import lombok.Setter;
         "cantProductos",
         "total",
         "id_Producto",
-        "id_Factura"
+        "id_Factura",
+        "id_Usuario"
 })
 
 public class DetalleFacturaDTO {
@@ -22,6 +23,7 @@ public class DetalleFacturaDTO {
     private Long id_DetalleFac;
     private Integer id_Factura;
     private Long id_Producto;
+    private Long id_Usuario;
 
     //private Long id_Uasurio;
     private int cantProductos;

@@ -12,6 +12,7 @@ import java.util.Set;
 @Setter
 @JsonPropertyOrder({
         "id_Factura",
+        "id_Usuario",
         "totalFactura",
         "listaDetalleFacturaDTO",
 
@@ -24,6 +25,6 @@ public class FacturaDTO {
     @JsonInclude(JsonInclude.Include.NON_NULL) // Solo desaparece si está en null
     private Set<DetalleFacturaDTO> listaDetallesFacturas;
 
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY) // Se permite recibir el id del usuario en el request (POST), pero no se expone en las respuestas JSON (response).
+    //@JsonProperty(access = JsonProperty.Access.WRITE_ONLY) // Se permite recibir el id del usuario en el request (POST), pero no se expone en las respuestas JSON (response).
     private Long id_Usuario;
 }

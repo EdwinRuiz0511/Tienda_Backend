@@ -11,6 +11,7 @@ import java.util.Set;
 @Mapper(componentModel = "spring")
 public interface IDetalleFacturaMapper {
 
+    @Mapping(target = "id_Usuario", source = "facturaEnt.usuarioEnt.id_Usuario")
     @Mapping(target = "id_Factura", source = "facturaEnt.id_Factura")
     @Mapping(target = "id_Producto",     source = "productosEnt.id_Producto")
     @Mapping(target = "nombreProducto",  source = "productosEnt.nombreProducto")
