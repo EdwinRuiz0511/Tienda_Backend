@@ -25,7 +25,7 @@ public class DetalleFacturaEntity {
     @Column(name = "total", nullable = false)
     private Float total;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_Factura") //FK
     private FacturaEntity facturaEnt;
 

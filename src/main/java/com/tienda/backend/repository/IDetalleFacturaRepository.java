@@ -6,6 +6,4 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface IDetalleFacturaRepository extends JpaRepository<DetalleFacturaEntity, Long> {
-
-    //Realizar el CRUD de Detalle_Factura
 }

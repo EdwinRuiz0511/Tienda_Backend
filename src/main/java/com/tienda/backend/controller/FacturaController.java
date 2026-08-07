@@ -3,7 +3,6 @@ package com.tienda.backend.controller;
 import com.tienda.backend.dto.FacturaDTO;
 import com.tienda.backend.service.IFacturaService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,13 +16,9 @@ public class FacturaController {
     IFacturaService facturaService;
 
     @PostMapping("/agregarFactura")
-    public ResponseEntity<?> agregarFactura(@RequestBody FacturaDTO facturaDto) {
-        try {
-            FacturaDTO agregarFactura = facturaService.agregarFactura(facturaDto);
-            return ResponseEntity.ok().body(agregarFactura);
-        } catch(Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error: "+e.getMessage());
-        }
+    public ResponseEntity<FacturaDTO> agregarFactura(@RequestBody FacturaDTO facturaDto) {
+        FacturaDTO agregarFactura = facturaService.agregarFactura(facturaDto);
+        return ResponseEntity.ok(agregarFactura);
     }
 
     @GetMapping("/listarFacturas")
@@ -32,25 +27,15 @@ public class FacturaController {
         return ResponseEntity.ok(facturaDto);
     }
 
-    @PutMapping("/actualizarFactura/{idFactura}")
-    public ResponseEntity<?> actualizarFactura (@PathVariable Integer idFactura, @RequestBody FacturaDTO facturaDto) {
-        try {
-            FacturaDTO facturaActualizada = facturaService.actuzalizarFactura(idFactura, facturaDto);
-            return ResponseEntity.ok(facturaActualizada);
-
-        }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error: "+e.getMessage());
-        }
+    @PutMapping("/actualizarFactura/{id_Factura}")
+    public ResponseEntity<FacturaDTO> actualizarFactura (@PathVariable Integer id_Factura, @RequestBody FacturaDTO facturaDto) {
+        FacturaDTO facturaActualizada  = facturaService.actuzalizarFactura(id_Factura, facturaDto);
+        return ResponseEntity.ok(facturaActualizada);
     }
 
-    @DeleteMapping("/eliminar/{idFactura}")
-    public ResponseEntity<String> eliminarFactura(@PathVariable Integer idFactura) {
-        try {
-            facturaService.eliminarFactura(idFactura);
-            return  ResponseEntity.noContent().build();
-
-        }catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error: "+e.getMessage());
-        }
+    @DeleteMapping("/eliminar/{id_Factura}")
+    public ResponseEntity<Void> eliminarFactura(@PathVariable Integer id_Factura) {
+        facturaService.eliminarFactura(id_Factura);
+        return ResponseEntity.noContent().build();
     }
 }

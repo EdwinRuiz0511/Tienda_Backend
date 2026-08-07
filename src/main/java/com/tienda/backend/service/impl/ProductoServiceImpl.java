@@ -4,12 +4,15 @@ import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.tienda.backend.dto.ProductosDTO;
 import com.tienda.backend.entity.ProductosEntity;
+import com.tienda.backend.exception.RecursoDuplicadoException;
+import com.tienda.backend.exception.RecursoNoEncontradoException;
 import com.tienda.backend.mapper.IProductoMapper;
 import com.tienda.backend.repository.IProductosRepository;
 import com.tienda.backend.service.IProductoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStreamReader;
@@ -73,7 +76,7 @@ public class ProductoServiceImpl implements IProductoService {
         Optional<ProductosEntity> productoExistente = productoRepository.findByNombreProducto(productosDto.getNombreProducto());
 
         if (productoExistente.isPresent()) {
-            throw new RuntimeException("Error: El producto ya existe");
+            throw new RecursoDuplicadoException("Error: El producto ya existe");
         }
 
         // Creamos el producto dto -> entity
@@ -98,10 +101,11 @@ public class ProductoServiceImpl implements IProductoService {
     }
 
     @Override
+    @Transactional
     public ProductosDTO actualizarProducto(Long id_Productos, ProductosDTO productosDto) {
 
         ProductosEntity productosEnt = productoRepository.findById(id_Productos)
-                .orElseThrow(() -> new RuntimeException("Producto con ID --> "+id_Productos+" No encontrado"));
+                .orElseThrow(() -> new RecursoNoEncontradoException("Producto con ID --> "+id_Productos+" No encontrado"));
 
         // DTO → ENTITY (actualización)
         productoMapper.actualizarProducto(productosDto, productosEnt);
@@ -117,11 +121,12 @@ public class ProductoServiceImpl implements IProductoService {
     }
 
     @Override
+    @Transactional
     public void eliminarProducto(Long id_Productos) {
 
         // Se valida que el usuario exista antes de eliminar
         ProductosEntity productosEnt = productoRepository.findById(id_Productos)
-                .orElseThrow(() -> new RuntimeException("Producto con ID --> "+id_Productos+" No encontrado"));
+                .orElseThrow(() -> new RecursoNoEncontradoException("Producto con ID --> "+id_Productos+" No encontrado"));
 
         // Se elimina el producto
         productoRepository.delete(productosEnt);

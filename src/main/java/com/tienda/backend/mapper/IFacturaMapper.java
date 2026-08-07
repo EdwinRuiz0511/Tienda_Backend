@@ -15,6 +15,7 @@ import java.util.Set;
 @Mapper(componentModel = "spring", uses = {IDetalleFacturaMapper.class})
 public interface IFacturaMapper {
 
+    // Dto -> Entity, ignoramos id_Factura porque es autoincremental, y usuarioEnt para id_Usuario ya que lo manejamos desde el service
     @Mapping(target = "id_Factura", ignore = true)
     @Mapping(target = "listaDetallesFacturas", ignore = true)
     @Mapping(target = "usuarioEnt", ignore = true)

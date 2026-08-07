@@ -4,6 +4,8 @@ import com.tienda.backend.dto.DetalleFacturaDTO;
 import com.tienda.backend.entity.DetalleFacturaEntity;
 import com.tienda.backend.entity.FacturaEntity;
 import com.tienda.backend.entity.ProductosEntity;
+import com.tienda.backend.exception.RecursoNoEncontradoException;
+import com.tienda.backend.exception.SolicitudInvalidaException;
 import com.tienda.backend.mapper.IDetalleFacturaMapper;
 import com.tienda.backend.repository.IDetalleFacturaRepository;
 import com.tienda.backend.repository.IFacturaRepository;
@@ -37,15 +39,16 @@ public class DetalleFacturaServiceImpl implements IDetalleFacturaService {
     //---------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @Override
+    @Transactional
     public DetalleFacturaDTO agregarDetalleFactura(DetalleFacturaDTO detalleFacturaDto) {
 
         // Buscar factura
         FacturaEntity facturaEnt = facturaRepository.findById(detalleFacturaDto.getId_Factura()).
-                orElseThrow(() -> new RuntimeException("Factura no encontrada"));
+                orElseThrow(() -> new RecursoNoEncontradoException("Factura con ID --> °"+detalleFacturaDto.getId_Factura()+"° No encontrado"));
 
         // Buscar Producto
         ProductosEntity productosEnt = productosRepository.findById(detalleFacturaDto.getId_Producto()).
-                orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+                orElseThrow(() -> new RecursoNoEncontradoException("Producto con ID --> °"+detalleFacturaDto.getId_Producto()+"° NO encontrado"));
 
 
         // Crear Entidad de DetallesFactura DTO → Entity:
@@ -82,7 +85,7 @@ public class DetalleFacturaServiceImpl implements IDetalleFacturaService {
 
         // 1. Validar que la lista no venga vacia o nula
         if (listaDetallesFactura == null || listaDetallesFactura.isEmpty()) {
-            throw new RuntimeException("Debe enviar al menos un Detalle de Factura");
+            throw new SolicitudInvalidaException("Debe enviar al menos un Detalle de Factura");
         }
 
         // 2. Obtener el id de la factura del primer elemento, se asume que todos los detalles pertenecen a la misma factura
@@ -93,12 +96,12 @@ public class DetalleFacturaServiceImpl implements IDetalleFacturaService {
                 .allMatch(detalle -> detalle.getId_Factura().equals(facturaId));
 
         if (!mismaFactura) {
-            throw new RuntimeException("Todos los detalles deben pertenecer a la misma factura");
+            throw new SolicitudInvalidaException("Todos los detalles deben pertenecer a la misma factura");
         }
 
         // 3. Buscar la factura en la BD
         FacturaEntity facturaEnt = facturaRepository.findById(facturaId)
-                .orElseThrow(() -> new RuntimeException("Factura no encontrada"));
+                .orElseThrow(() -> new RecursoNoEncontradoException("Factura con ID --> °"+facturaId+"° No encontrada"));
 
         // 4. Obtener lista de IDs de productos (sin repetir) -> O(n)
                 List<Long> idsProductos = listaDetallesFactura.stream()                                                 // Recorre la lista
@@ -120,23 +123,23 @@ public class DetalleFacturaServiceImpl implements IDetalleFacturaService {
         float totalFactura = Optional.ofNullable(facturaEnt.getTotalFactura()).orElse(0f);
 
         // 9. Recorrer cada detalle enviado desde el cliente
-        for(DetalleFacturaDTO detalleFacturaDTO : listaDetallesFactura) {
+        for(DetalleFacturaDTO detalleFacturaDto : listaDetallesFactura) {
             // Buscar producto en el mapa -> O(1)
-            ProductosEntity productosEntity = mapaProductosEnt.get(detalleFacturaDTO.getId_Producto());
+            ProductosEntity productosEntity = mapaProductosEnt.get(detalleFacturaDto.getId_Producto());
 
             // Si no existe el producto → error
             if (productosEntity == null) {
-                throw new RuntimeException("Producto no encontrado ID: " + detalleFacturaDTO.getId_Producto());
+                throw new RecursoNoEncontradoException("Producto con ID --> °"+detalleFacturaDto.getId_Producto()+"° NO encontrado");
             }
 
             // Crear entidad detalle
             DetalleFacturaEntity detalleFacturaEnt = new DetalleFacturaEntity();
-            detalleFacturaEnt.setCantProductos(detalleFacturaDTO.getCantProductos());
+            detalleFacturaEnt.setCantProductos(detalleFacturaDto.getCantProductos());
             detalleFacturaEnt.setFacturaEnt(facturaEnt);
             detalleFacturaEnt.setProductosEnt(productosEntity);
 
             // Calcular subtotal
-            Float subtotal  = (float) (detalleFacturaDTO.getCantProductos() * productosEntity.getPrecio());
+            Float subtotal  = (float) (detalleFacturaDto.getCantProductos() * productosEntity.getPrecio());
             detalleFacturaEnt.setTotal(subtotal );
 
             // Agregar a lista de guardado
@@ -156,168 +159,7 @@ public class DetalleFacturaServiceImpl implements IDetalleFacturaService {
         // 12. Convertir respuesta entity -> DTO
         return detallesGuardar
                 .stream()
-                .map(detalleEnt -> {
-
-                    DetalleFacturaDTO detalleFacturaDTO = new DetalleFacturaDTO();
-
-                    detalleFacturaDTO.setId_DetalleFac(detalleEnt.getId_DetalleFac());
-                    detalleFacturaDTO.setNombreProducto(detalleEnt.getProductosEnt().getNombreProducto());
-                    detalleFacturaDTO.setCategoria(detalleEnt.getProductosEnt().getCategoria());
-                    detalleFacturaDTO.setPrecio(detalleEnt.getProductosEnt().getPrecio());
-                    detalleFacturaDTO.setCantProductos(detalleEnt.getCantProductos());
-                    detalleFacturaDTO.setTotal(detalleEnt.getTotal());
-                    detalleFacturaDTO.setId_Producto(detalleEnt.getProductosEnt().getId_Producto());
-                    detalleFacturaDTO.setId_Factura(detalleEnt.getFacturaEnt().getId_Factura());
-                    return detalleFacturaDTO;
-                }).collect(Collectors.toList());
+                .map(iDetalleFacturaMapper :: toDTOBasico)
+                .collect(Collectors.toList());
     }
 }
-
-
-/*
-
-METODO agregarListaDeTallesFactura REFACTORIZADO, P
-
-    // ==============================
-    // MÉTODO PRINCIPAL (ORQUESTADOR)
-    // ==============================
-    @Override
-    @Transactional
-    public List<DetalleFacturaDTO> agregarListaDeTallesFactura(List<DetalleFacturaDTO> listaDetallesFactura) {
-
-        validarLista(listaDetallesFactura);
-
-        FacturaEntity factura = obtenerFactura(listaDetallesFactura);
-
-        Map<Long, ProductosEntity> mapaProductos = obtenerMapaProductos(listaDetallesFactura);
-
-        List<DetalleFacturaEntity> detalles = crearDetalles(listaDetallesFactura, factura, mapaProductos);
-
-        actualizarTotalFactura(factura, detalles);
-
-        return convertirADTO(detalles);
-    }
-
-
-    // ==============================
-    // VALIDACIÓN
-    // ==============================
-    private void validarLista(List<DetalleFacturaDTO> lista) {
-        if (lista == null || lista.isEmpty()) {
-            throw new RuntimeException("Debe enviar al menos un Detalle de Factura");
-        }
-    }
-
-
-    // ==============================
-    // FACTURA
-    // ==============================
-    private FacturaEntity obtenerFactura(List<DetalleFacturaDTO> lista) {
-
-        Integer facturaId = lista.get(0).getId_Factura();
-
-        return facturaRepository.findById(facturaId)
-                .orElseThrow(() -> new RuntimeException("Factura no encontrada"));
-    }
-
-
-    // ==============================
-    // PRODUCTOS
-    // ==============================
-    private Map<Long, ProductosEntity> obtenerMapaProductos(List<DetalleFacturaDTO> lista) {
-
-        List<Long> ids = lista.stream()
-                .map(DetalleFacturaDTO::getId_Producto)
-                .distinct()
-                .toList();
-
-        List<ProductosEntity> productos = productosRepository.findAllById(ids);
-
-        return productos.stream()
-                .collect(Collectors.toMap(ProductosEntity::getId_Productos, p -> p));
-    }
-
-
-    // ==============================
-    // CREAR DETALLES
-    // ==============================
-    private List<DetalleFacturaEntity> crearDetalles(
-            List<DetalleFacturaDTO> lista,
-            FacturaEntity factura,
-            Map<Long, ProductosEntity> mapaProductos) {
-
-        List<DetalleFacturaEntity> detalles = new ArrayList<>();
-
-        for (DetalleFacturaDTO dto : lista) {
-
-            ProductosEntity producto = mapaProductos.get(dto.getId_Producto());
-
-            if (producto == null) {
-                throw new RuntimeException("Producto no encontrado ID: " + dto.getId_Producto());
-            }
-
-            DetalleFacturaEntity detalle = new DetalleFacturaEntity();
-            detalle.setCantProductos(dto.getCantProductos());
-            detalle.setFacturaEnt(factura);
-            detalle.setProductosEnt(producto);
-
-            float subtotal = dto.getCantProductos() * producto.getPrecio();
-            detalle.setTotal(subtotal);
-
-            detalles.add(detalle);
-        }
-
-        return detalleFacturaRepository.saveAll(detalles);
-    }
-
-
-    // ==============================
-    // ACTUALIZAR FACTURA
-    // ==============================
-    private void actualizarTotalFactura(FacturaEntity factura, List<DetalleFacturaEntity> detalles) {
-
-        float totalActual = Optional.ofNullable(factura.getTotalFactura()).orElse(0f);
-
-        float totalNuevo = detalles.stream()
-                .map(DetalleFacturaEntity::getTotal)
-                .reduce(0f, Float::sum);
-
-        factura.setTotalFactura(totalActual + totalNuevo);
-
-        facturaRepository.save(factura);
-    }
-
-
-    // ==============================
-    // CONVERTIR A DTO
-    // ==============================
-    private List<DetalleFacturaDTO> convertirADTO(List<DetalleFacturaEntity> detalles) {
-
-        return detalles.stream().map(det -> {
-            DetalleFact|raDTO dto = new DetalleFacturaDTO();
-            dto.setId_DetalleFac(det.getId_DetalleFac());
-            dto.setCantProductos(det.getCantProductos());
-            dto.setTotal(det.getTotal());
-            dto.setId_Producto(det.getProductosEnt().getId_Productos());
-            dto.setId_Factura(det.getFacturaEnt().getId_Factura());
-            return dto;
-        }).toList();
-    }
-}
-
-// 6. Convertir la lista de productos obtenida de la BD en un Map para búsquedas rápidas por ID
-Map<Long, ProductosEntity> mapaProductosEnt = productosEnt.stream()     // Convierte la lista de productos en un stream para procesarla funcionalmente
-
-        // Construye un Map a partir del stream
-        .collect(Collectors.toMap(
-
-                ProductosEntity :: getId_Productos,   // 🔑 CLAVE del Map → será el ID del producto
-                                                      // Es equivalente a: p -> p.getId_Productos()
-
-                p -> p                                // 📦 VALOR del Map → será el objeto producto completo
-                                                      // No se transforma, se guarda tal cual
-
-        ));
-
-
- */

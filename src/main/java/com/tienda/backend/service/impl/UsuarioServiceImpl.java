@@ -3,6 +3,8 @@ package com.tienda.backend.service.impl;
 import com.tienda.backend.dto.UsuarioDTO;
 import com.tienda.backend.entity.RolEntity;
 import com.tienda.backend.entity.UsuarioEntity;
+import com.tienda.backend.exception.RecursoDuplicadoException;
+import com.tienda.backend.exception.RecursoNoEncontradoException;
 import com.tienda.backend.mapper.IUsuarioMapper;
 import com.tienda.backend.repository.IRolRepository;
 import com.tienda.backend.repository.IUsuarioRepository;
@@ -11,6 +13,7 @@ import com.tienda.backend.service.IUsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -35,12 +38,12 @@ public class UsuarioServiceImpl implements IUsuarioService {
     public void registrarUsuario(RegisterRequestDTO registerRequestDTO) {
         // 1. Validar si el username ya existe
         if (usuarioRepository.findByUsername(registerRequestDTO.getUsername()).isPresent()) {
-            throw new RuntimeException("❌ El username ya existe");
+            throw new RecursoDuplicadoException("El username °"+registerRequestDTO.getUsername()+"° YA existe");
         }
 
         // 2. Buscar rol USER (por seguridad, todo usuario registrado es USER)
         RolEntity rolEnt = rolRepository.findByNombreRol("USER")
-                .orElseThrow(() -> new RuntimeException("❌ Rol USER no existe"));
+                .orElseThrow(() -> new RecursoNoEncontradoException("❌ Rol USER no existe"));
 
         // 3. Crear entidad Usuario:
         UsuarioEntity usuarioEnt = new UsuarioEntity();
@@ -76,7 +79,7 @@ public class UsuarioServiceImpl implements IUsuarioService {
 
         //Buscamos al Usuario por su Id en la BD
         UsuarioEntity usuarioEnt = usuarioRepository.findByIdConFacturas(id_Usuario)
-                .orElseThrow(() -> new RuntimeException("Usuario con ID -> "+id_Usuario+" No encontrado"));
+                .orElseThrow(() -> new RecursoNoEncontradoException("Usuario con ID -> "+id_Usuario+" No encontrado"));
 
         // DTO → FRONTEND
         return usuarioMapper.toDTOConFacturas(usuarioEnt);
@@ -88,17 +91,18 @@ public class UsuarioServiceImpl implements IUsuarioService {
 
         //Buscamos al Usuario por su Id en la BD
         UsuarioEntity usuarioEnt = usuarioRepository.findByIdConFacturasYDetalles(id_Usuario)
-                .orElseThrow(() -> new RuntimeException("Usuario con ID -> "+id_Usuario+ " No encontrado"));
+                .orElseThrow(() -> new RecursoNoEncontradoException("Usuario con ID -> "+id_Usuario+ " No encontrado"));
 
         // DTO → FRONTEND
         return usuarioMapper.toDTOCompleto(usuarioEnt);
     }
 
     @Override
+    @Transactional
     public UsuarioDTO actuzalizarUsuario(Long id_Usuario, UsuarioDTO usuarioDto) {
 
         UsuarioEntity usuarioEnt = usuarioRepository.findById(id_Usuario)
-                .orElseThrow(() -> new RuntimeException("Usuario con ID -> "+id_Usuario+ " No encontrado"));
+                .orElseThrow(() -> new RecursoNoEncontradoException("Usuario con ID -> "+id_Usuario+ " No encontrado"));
 
         // DTO → ENTITY (actualización)
         usuarioMapper.actualizarUsuario(usuarioDto, usuarioEnt);
@@ -111,11 +115,12 @@ public class UsuarioServiceImpl implements IUsuarioService {
     }
 
     @Override
+    @Transactional
     public void eliminarUsuario(Long id_Usuario) {
         // BASE DE DATOS → ENTITY
         // Se valida que el usuario exista antes de eliminar
         UsuarioEntity usuarioEnt = usuarioRepository.findById(id_Usuario).
-                orElseThrow(() -> new RuntimeException("Usuario con ID -> "+ id_Usuario +" No encontrado"));
+                orElseThrow(() -> new RecursoNoEncontradoException("Usuario con ID -> "+ id_Usuario +" No encontrado"));
 
         // Se elimina el registro
         usuarioRepository.delete(usuarioEnt);

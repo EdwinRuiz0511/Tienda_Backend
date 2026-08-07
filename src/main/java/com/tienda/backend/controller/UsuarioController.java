@@ -3,13 +3,11 @@ package com.tienda.backend.controller;
 import com.tienda.backend.dto.UsuarioDTO;
 import com.tienda.backend.service.IUsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
 
 @RestController
 @RequestMapping ("/usuarios")
@@ -26,51 +24,31 @@ public class UsuarioController {
     @GetMapping("/listarUsuarios")
     public ResponseEntity<List<UsuarioDTO>> ListarUsuarios() {
         List<UsuarioDTO> usuarioDTOS = usuarioService.listarUsuarios();
-
         return ResponseEntity.ok(usuarioDTOS);
     }
 
     @GetMapping("/listarUsuariosConFacturas/{idUsuario}")
     public ResponseEntity<UsuarioDTO> ListarUsuariosConFactuPorId(@PathVariable Long idUsuario) {
         UsuarioDTO usuarioDto = usuarioService.listar_Usuarios_Factu_PorId(idUsuario);
-
         return ResponseEntity.ok(usuarioDto);
     }
 
-    @GetMapping("/listarUsuariosConFacturasYDetalles/{idUsuario}")
-    public ResponseEntity<?> ListarUsuariosConFactuYDetallPorId (@PathVariable Long idUsuario) {
-        try {
-            UsuarioDTO usuarioDto = usuarioService.listar_Usuarios_Factu_Detall_PorId(idUsuario);
-            return ResponseEntity.ok(usuarioDto);
-
-        } catch (Exception e) {
-
-            Map<String, String> error = new HashMap<>();
-            error.put("mensaje", e.getMessage());
-
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
-        }
+    @GetMapping("/listarUsuariosConFacturasYDetalles/{id_Usuario}")
+    public ResponseEntity<UsuarioDTO> ListarUsuariosConFactuYDetallPorId (@PathVariable Long id_Usuario) {
+       UsuarioDTO usuarioDto = usuarioService.listar_Usuarios_Factu_Detall_PorId(id_Usuario);
+       return ResponseEntity.ok(usuarioDto);
     }
 
 
-    @PutMapping("/actualizar/{idUsuario}")
-    public ResponseEntity<?> actualizarUsuario(@PathVariable Long idUsuario, @RequestBody UsuarioDTO usuario) {
-        try {
-            UsuarioDTO usuarioActualizado = usuarioService.actuzalizarUsuario(idUsuario, usuario);
-            return ResponseEntity.ok(usuarioActualizado);
-
-        }catch(Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error: "+e.getMessage());
-        }
+    @PutMapping("/actualizar/{id_Usuario}")
+    public ResponseEntity<UsuarioDTO> actualizarUsuario(@PathVariable Long id_Usuario, @RequestBody UsuarioDTO usuarioDto) {
+        UsuarioDTO usuarioActualizado = usuarioService.actuzalizarUsuario(id_Usuario, usuarioDto);
+        return  ResponseEntity.ok(usuarioActualizado);
     }
 
-    @DeleteMapping("/eliminar/{idUsuario}")
-    public ResponseEntity<String> eliminarUsuario (@PathVariable Long idUsuario) {
-        try {
-            usuarioService.eliminarUsuario(idUsuario);
-            return ResponseEntity.noContent().build();
-        }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error: "+e.getMessage());
-        }
+    @DeleteMapping("/eliminar/{id_Usuario}")
+    public ResponseEntity<Void> eliminarUsuario (@PathVariable Long id_Usuario) {
+        usuarioService.eliminarUsuario(id_Usuario);
+        return ResponseEntity.noContent().build();
     }
 }
