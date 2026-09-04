@@ -25,7 +25,7 @@ public interface IFacturaMapper {
     @Named("facturaSinDetalles")
     @Mapping(target = "id_Usuario", source = "usuarioEnt.id_Usuario")
     @Mapping(target = "listaDetallesFacturas", ignore = true)
-    FacturaDTO toDTOSinDetalles(FacturaEntity facturaEnt);
+    FacturaDTO toDTOBasico(FacturaEntity facturaEnt);
 
     // Convierte la factura con toda su información relacionada. (incluyendo sus detalles).
     @Named("facturaConDetalles")

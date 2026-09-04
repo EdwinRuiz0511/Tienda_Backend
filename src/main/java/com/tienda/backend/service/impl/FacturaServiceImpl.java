@@ -44,7 +44,7 @@ public class FacturaServiceImpl implements IFacturaService {
         facturaRepository.save(facturaEnt);
 
         // 5. Retornar DTO, Entity → DTO
-        FacturaDTO respuesta = iFacturaMapper.toDTOSinDetalles(facturaEnt);
+        FacturaDTO respuesta = iFacturaMapper.toDTOBasico(facturaEnt);
 
         return respuesta;
     }
@@ -74,7 +74,7 @@ public class FacturaServiceImpl implements IFacturaService {
         FacturaEntity facturaActualizada = facturaRepository.save(facturaEnt);
 
         // ENTITY → DTO
-        return iFacturaMapper.toDTOSinDetalles(facturaActualizada);
+        return iFacturaMapper.toDTOBasico(facturaActualizada);
     }
 
     @Override

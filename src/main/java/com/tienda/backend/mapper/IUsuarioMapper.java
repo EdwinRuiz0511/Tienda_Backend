@@ -22,6 +22,7 @@ public interface IUsuarioMapper {
     @Named("usuarioBasico")
     @Mapping(target = "listaDeFacturas", ignore = true)
     @Mapping(target = "nombreRol", source = "rolEnt.nombreRol")
+    //@Mapping(target = "password", ignore = true)
     UsuarioDTO toDTOBasico(UsuarioEntity usuarioEnt);
 
     // nombreRol necesita @Mapping porque hay que atravesar rolEnt para llegar a él.

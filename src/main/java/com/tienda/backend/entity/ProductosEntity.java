@@ -23,7 +23,7 @@ public class ProductosEntity {
     @Column(name = "id_Productos")
     private Long id_Producto;
 
-    @Column(name = "nombreProducto")
+    @Column(name = "nombreProducto", unique = true)
     private String nombreProducto;
 
     @Column(name = "precio")

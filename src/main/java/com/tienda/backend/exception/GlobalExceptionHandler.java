@@ -1,5 +1,7 @@
 package com.tienda.backend.exception;
 
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -8,6 +10,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.time.LocalDateTime;
 import java.util.Map;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -26,8 +29,15 @@ public class GlobalExceptionHandler {
         return construirRespuesta(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<?> manejarViolacionIntegridad(DataIntegrityViolationException ex) {
+        log.warn("Violacion de restricción de integridad: {}", ex.getMessage());
+        return construirRespuesta(HttpStatus.CONFLICT, "El recurso ya existe o viola una restricción de la base de datos");
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> manejarErrorInesperado(Exception ex) {
+        log.error("\nError inesperado al procesar la solicitud: ", ex);
         return construirRespuesta(HttpStatus.INTERNAL_SERVER_ERROR, "Error interno del servidor");
     }
 

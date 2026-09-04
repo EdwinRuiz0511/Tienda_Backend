@@ -114,7 +114,7 @@ public class DetalleFacturaServiceImpl implements IDetalleFacturaService {
 
         // 6. Convertir lista de productos en mapa para búsqueda rápida -> O(n)
         Map<Long, ProductosEntity> mapaProductosEnt = productosEnt.stream()
-                .collect(Collectors.toMap(ProductosEntity :: getId_Producto, p -> p));
+                .collect(Collectors.toMap(ProductosEntity :: getId_Producto, productos -> productos));
 
         // 7. Lista donde guardaremos los detalles listos para insertar
         List<DetalleFacturaEntity> detallesGuardar = new ArrayList<>();
@@ -123,7 +123,7 @@ public class DetalleFacturaServiceImpl implements IDetalleFacturaService {
         float totalFactura = Optional.ofNullable(facturaEnt.getTotalFactura()).orElse(0f);
 
         // 9. Recorrer cada detalle enviado desde el cliente
-        for(DetalleFacturaDTO detalleFacturaDto : listaDetallesFactura) {
+        for(DetalleFacturaDTO detalleFacturaDto : listaDetallesFactura) {                                               // "Por cada elemento de tipo DetalleFacturaDTO que encuentre dentro de listaDetallesFactura, guárdalo temporalmente en la variable detalleFacturaDto."
             // Buscar producto en el mapa -> O(1)
             ProductosEntity productosEntity = mapaProductosEnt.get(detalleFacturaDto.getId_Producto());
 
