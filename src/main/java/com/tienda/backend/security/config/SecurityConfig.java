@@ -51,7 +51,8 @@ public class SecurityConfig {
                         .requestMatchers("/usuarios/**",
                                 "/facturas/**",
                                 "/productos/**",
-                                "/detalle-factura/**"
+                                "/detalle-factura/**",
+                                "/carga-csv/**"
                         ).hasRole("ADMIN")
 
                         // 🔒 CUALQUIER OTRA PETICIÓN

@@ -14,7 +14,7 @@ import java.util.List;
 public class UsuarioController {
 
     @Autowired
-    private IUsuarioService usuarioService;
+    private IUsuarioService iUsuarioService;
 
 //    @PostMapping ("/agregarUsuario")
 //    public ResponseEntity<UsuarioDTO> guardarUsuario(@RequestBody UsuarioDTO usuarioDto){
@@ -23,32 +23,32 @@ public class UsuarioController {
 
     @GetMapping("/listarUsuarios")
     public ResponseEntity<List<UsuarioDTO>> ListarUsuarios() {
-        List<UsuarioDTO> usuarioDTOS = usuarioService.listarUsuarios();
+        List<UsuarioDTO> usuarioDTOS = iUsuarioService.listarUsuarios();
         return ResponseEntity.ok(usuarioDTOS);
     }
 
     @GetMapping("/listarUsuariosConFacturas/{idUsuario}")
     public ResponseEntity<UsuarioDTO> ListarUsuariosConFactuPorId(@PathVariable Long idUsuario) {
-        UsuarioDTO usuarioDto = usuarioService.listar_Usuarios_Factu_PorId(idUsuario);
+        UsuarioDTO usuarioDto = iUsuarioService.listar_Usuarios_Factu_PorId(idUsuario);
         return ResponseEntity.ok(usuarioDto);
     }
 
     @GetMapping("/listarUsuariosConFacturasYDetalles/{id_Usuario}")
     public ResponseEntity<UsuarioDTO> ListarUsuariosConFactuYDetallPorId (@PathVariable Long id_Usuario) {
-       UsuarioDTO usuarioDto = usuarioService.listar_Usuarios_Factu_Detall_PorId(id_Usuario);
+       UsuarioDTO usuarioDto = iUsuarioService.listar_Usuarios_Factu_Detall_PorId(id_Usuario);
        return ResponseEntity.ok(usuarioDto);
     }
 
 
     @PutMapping("/actualizar/{id_Usuario}")
     public ResponseEntity<UsuarioDTO> actualizarUsuario(@PathVariable Long id_Usuario, @RequestBody UsuarioDTO usuarioDto) {
-        UsuarioDTO usuarioActualizado = usuarioService.actuzalizarUsuario(id_Usuario, usuarioDto);
+        UsuarioDTO usuarioActualizado = iUsuarioService.actuzalizarUsuario(id_Usuario, usuarioDto);
         return  ResponseEntity.ok(usuarioActualizado);
     }
 
     @DeleteMapping("/eliminar/{id_Usuario}")
     public ResponseEntity<Void> eliminarUsuario (@PathVariable Long id_Usuario) {
-        usuarioService.eliminarUsuario(id_Usuario);
+        iUsuarioService.eliminarUsuario(id_Usuario);
         return ResponseEntity.noContent().build();
     }
 }

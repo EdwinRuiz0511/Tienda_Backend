@@ -13,13 +13,13 @@ import org.springframework.stereotype.Service;
 public class CustomUserDetailsService implements UserDetailsService {
 
     @Autowired
-    private IUsuarioRepository usuarioRepository;
+    private IUsuarioRepository iUsuarioRepository;
 
     // Carga un usuario desde la base de datos para el proceso de autenticación (login)
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        UsuarioEntity usuarioEnt = usuarioRepository.findByUsername(username)
+        UsuarioEntity usuarioEnt = iUsuarioRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado con el username: " + username));
 
         System.out.println("✅ Usuario encontrado: " + usuarioEnt.getUsername());

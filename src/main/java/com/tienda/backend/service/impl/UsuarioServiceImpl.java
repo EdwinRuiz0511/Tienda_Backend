@@ -21,29 +21,29 @@ import java.util.List;
 public class UsuarioServiceImpl implements IUsuarioService {
 
     @Autowired
-    IUsuarioRepository usuarioRepository;
+    IUsuarioRepository iUsuarioRepository;
 
     @Autowired
-    IRolRepository rolRepository;
+    IRolRepository iRolRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Autowired
-    IUsuarioMapper usuarioMapper;
+    IUsuarioMapper iUsuarioMapper;
 
     //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @Override
     public void registrarUsuario(RegisterRequestDTO registerRequestDTO) {
         // 1. Validar si el username ya existe
-        if (usuarioRepository.findByUsername(registerRequestDTO.getUsername()).isPresent()) {
-            throw new RecursoDuplicadoException("El username °"+registerRequestDTO.getUsername()+"° YA existe");
+        if (iUsuarioRepository.findByUsername(registerRequestDTO.getUsername()).isPresent()) {
+            throw new RecursoDuplicadoException("El Username --> °"+registerRequestDTO.getUsername()+"° YA existe");
         }
 
         // 2. Buscar rol USER (por seguridad, todo usuario registrado es USER)
-        RolEntity rolEnt = rolRepository.findByNombreRol("USER")
-                .orElseThrow(() -> new RecursoNoEncontradoException("❌ Rol USER no existe"));
+        RolEntity rolEnt = iRolRepository.findByNombreRol("USER")
+                .orElseThrow(() -> new RecursoNoEncontradoException("Rol --> USER no existe"));
 
         // 3. Crear entidad Usuario:
         UsuarioEntity usuarioEnt = new UsuarioEntity();
@@ -60,17 +60,17 @@ public class UsuarioServiceImpl implements IUsuarioService {
         usuarioEnt.setRolEnt(rolEnt);
 
         // 6. Guardar en base de datos_
-        usuarioRepository.save(usuarioEnt);
+        iUsuarioRepository.save(usuarioEnt);
     }
 
     @Override
     public List<UsuarioDTO> listarUsuarios() {
 
         //Listamos todos los Usuarios desde la BD
-        List<UsuarioEntity> usuariosEnt = usuarioRepository.findAll();
+        List<UsuarioEntity> usuariosEnt = iUsuarioRepository.findAll();
 
         // DTO → FRONTEND
-        return usuarioMapper.toDTOListBasico(usuariosEnt);
+        return iUsuarioMapper.toDTOListBasico(usuariosEnt);
     }
 
     // Metodo para listar las Facturas de un Usuario por su ID
@@ -78,11 +78,11 @@ public class UsuarioServiceImpl implements IUsuarioService {
     public UsuarioDTO listar_Usuarios_Factu_PorId(Long id_Usuario) {
 
         //Buscamos al Usuario por su Id en la BD
-        UsuarioEntity usuarioEnt = usuarioRepository.findByIdConFacturas(id_Usuario)
+        UsuarioEntity usuarioEnt = iUsuarioRepository.findByIdConFacturas(id_Usuario)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Usuario con ID -> "+id_Usuario+" No encontrado"));
 
         // DTO → FRONTEND
-        return usuarioMapper.toDTOConFacturas(usuarioEnt);
+        return iUsuarioMapper.toDTOConFacturas(usuarioEnt);
     }
 
     //Metodo para listar un Usuario con sus Facturas y Detalles por su ID
@@ -90,28 +90,28 @@ public class UsuarioServiceImpl implements IUsuarioService {
     public UsuarioDTO listar_Usuarios_Factu_Detall_PorId(Long id_Usuario) {
 
         //Buscamos al Usuario por su Id en la BD
-        UsuarioEntity usuarioEnt = usuarioRepository.findByIdConFacturasYDetalles(id_Usuario)
+        UsuarioEntity usuarioEnt = iUsuarioRepository.findByIdConFacturasYDetalles(id_Usuario)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Usuario con ID -> "+id_Usuario+ " No encontrado"));
 
         // DTO → FRONTEND
-        return usuarioMapper.toDTOCompleto(usuarioEnt);
+        return iUsuarioMapper.toDTOCompleto(usuarioEnt);
     }
 
     @Override
     @Transactional
     public UsuarioDTO actuzalizarUsuario(Long id_Usuario, UsuarioDTO usuarioDto) {
 
-        UsuarioEntity usuarioEnt = usuarioRepository.findById(id_Usuario)
+        UsuarioEntity usuarioEnt = iUsuarioRepository.findById(id_Usuario)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Usuario con ID -> "+id_Usuario+ " No encontrado"));
 
         // DTO → ENTITY (actualización)
-        usuarioMapper.actualizarUsuario(usuarioDto, usuarioEnt);
+        iUsuarioMapper.actualizarUsuario(usuarioDto, usuarioEnt);
 
         // ENTITY → BASE DE DATOS
-        UsuarioEntity usuarioActualizado = usuarioRepository.save(usuarioEnt);
+        UsuarioEntity usuarioActualizado = iUsuarioRepository.save(usuarioEnt);
 
         // ENTITY → DTO
-        return usuarioMapper.toDTOBasico(usuarioActualizado);
+        return iUsuarioMapper.toDTOBasico(usuarioActualizado);
     }
 
     @Override
@@ -119,11 +119,11 @@ public class UsuarioServiceImpl implements IUsuarioService {
     public void eliminarUsuario(Long id_Usuario) {
         // BASE DE DATOS → ENTITY
         // Se valida que el usuario exista antes de eliminar
-        UsuarioEntity usuarioEnt = usuarioRepository.findById(id_Usuario).
+        UsuarioEntity usuarioEnt = iUsuarioRepository.findById(id_Usuario).
                 orElseThrow(() -> new RecursoNoEncontradoException("Usuario con ID -> "+ id_Usuario +" No encontrado"));
 
         // Se elimina el registro
-        usuarioRepository.delete(usuarioEnt);
+        iUsuarioRepository.delete(usuarioEnt);
     }
 }
 

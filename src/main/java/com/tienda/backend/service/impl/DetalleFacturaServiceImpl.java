@@ -25,13 +25,13 @@ import java.util.stream.Collectors;
 public class DetalleFacturaServiceImpl implements IDetalleFacturaService {
 
     @Autowired
-    private IDetalleFacturaRepository detalleFacturaRepository;
+    private IDetalleFacturaRepository iDetalleFacturaRepository;
 
     @Autowired
-    private IFacturaRepository facturaRepository;
+    private IFacturaRepository iFacturaRepository;
 
     @Autowired
-    private IProductosRepository productosRepository;
+    private IProductosRepository iProductosRepository;
 
     @Autowired
     IDetalleFacturaMapper iDetalleFacturaMapper;
@@ -43,11 +43,11 @@ public class DetalleFacturaServiceImpl implements IDetalleFacturaService {
     public DetalleFacturaDTO agregarDetalleFactura(DetalleFacturaDTO detalleFacturaDto) {
 
         // Buscar factura
-        FacturaEntity facturaEnt = facturaRepository.findById(detalleFacturaDto.getId_Factura()).
+        FacturaEntity facturaEnt = iFacturaRepository.findById(detalleFacturaDto.getId_Factura()).
                 orElseThrow(() -> new RecursoNoEncontradoException("Factura con ID --> °"+detalleFacturaDto.getId_Factura()+"° No encontrado"));
 
         // Buscar Producto
-        ProductosEntity productosEnt = productosRepository.findById(detalleFacturaDto.getId_Producto()).
+        ProductosEntity productosEnt = iProductosRepository.findById(detalleFacturaDto.getId_Producto()).
                 orElseThrow(() -> new RecursoNoEncontradoException("Producto con ID --> °"+detalleFacturaDto.getId_Producto()+"° NO encontrado"));
 
 
@@ -62,7 +62,7 @@ public class DetalleFacturaServiceImpl implements IDetalleFacturaService {
         detalleFacturaEnt.setTotal(total);
 
         // Guardar en BD (DetalleFcatura)
-        DetalleFacturaEntity guardado = detalleFacturaRepository.save(detalleFacturaEnt);
+        DetalleFacturaEntity guardado = iDetalleFacturaRepository.save(detalleFacturaEnt);
 
         // Actualizar factura tambien y acumular
         Float totalActual = facturaEnt.getTotalFactura();
@@ -71,7 +71,7 @@ public class DetalleFacturaServiceImpl implements IDetalleFacturaService {
         }
         float nuevoTotal = totalActual + total;
 
-        facturaRepository.actualizarTotal(facturaEnt.getId_Factura(), nuevoTotal);
+        iFacturaRepository.actualizarTotal(facturaEnt.getId_Factura(), nuevoTotal);
 
         // Pasar de Entity -> DTO
         DetalleFacturaDTO respuesta = iDetalleFacturaMapper.toDTOBasico(guardado);
@@ -100,7 +100,7 @@ public class DetalleFacturaServiceImpl implements IDetalleFacturaService {
         }
 
         // 3. Buscar la factura en la BD
-        FacturaEntity facturaEnt = facturaRepository.findById(facturaId)
+        FacturaEntity facturaEnt = iFacturaRepository.findById(facturaId)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Factura con ID --> °"+facturaId+"° No encontrada"));
 
         // 4. Obtener lista de IDs de productos (sin repetir) -> O(n)
@@ -110,7 +110,7 @@ public class DetalleFacturaServiceImpl implements IDetalleFacturaService {
                 .collect(Collectors.toList());                                                                          // devuelve la lista final
 
         // 5. Traer todos los productos en UNA sola consulta a BD
-        List<ProductosEntity> productosEnt = productosRepository.findAllById(idsProductos);
+        List<ProductosEntity> productosEnt = iProductosRepository.findAllById(idsProductos);
 
         // 6. Convertir lista de productos en mapa para búsqueda rápida -> O(n)
         Map<Long, ProductosEntity> mapaProductosEnt = productosEnt.stream()
@@ -150,11 +150,11 @@ public class DetalleFacturaServiceImpl implements IDetalleFacturaService {
         }
 
         // 10. Guardar TODOS los detalles en una sola operación
-        detalleFacturaRepository.saveAll(detallesGuardar);
+        iDetalleFacturaRepository.saveAll(detallesGuardar);
 
         // 11. Actualizar el total en la tabla de BD Factura
         //facturaEnt.setTotalFactura(totalFactura);
-        facturaRepository.actualizarTotal(facturaId, totalFactura);
+        iFacturaRepository.actualizarTotal(facturaId, totalFactura);
 
         // 12. Convertir respuesta entity -> DTO
         return detallesGuardar

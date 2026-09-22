@@ -13,29 +13,29 @@ import java.util.List;
 public class FacturaController {
 
     @Autowired
-    IFacturaService facturaService;
+    IFacturaService iFacturaService;
 
     @PostMapping("/agregarFactura")
     public ResponseEntity<FacturaDTO> agregarFactura(@RequestBody FacturaDTO facturaDto) {
-        FacturaDTO agregarFactura = facturaService.agregarFactura(facturaDto);
+        FacturaDTO agregarFactura = iFacturaService.agregarFactura(facturaDto);
         return ResponseEntity.ok(agregarFactura);
     }
 
     @GetMapping("/listarFacturas")
     public ResponseEntity<List<FacturaDTO>> listarFcaturas() {
-        List<FacturaDTO> facturaDto = facturaService.listarFacturasDto();
+        List<FacturaDTO> facturaDto = iFacturaService.listarFacturasDto();
         return ResponseEntity.ok(facturaDto);
     }
 
     @PutMapping("/actualizarFactura/{id_Factura}")
     public ResponseEntity<FacturaDTO> actualizarFactura (@PathVariable Integer id_Factura, @RequestBody FacturaDTO facturaDto) {
-        FacturaDTO facturaActualizada  = facturaService.actuzalizarFactura(id_Factura, facturaDto);
+        FacturaDTO facturaActualizada  = iFacturaService.actuzalizarFactura(id_Factura, facturaDto);
         return ResponseEntity.ok(facturaActualizada);
     }
 
     @DeleteMapping("/eliminar/{id_Factura}")
     public ResponseEntity<Void> eliminarFactura(@PathVariable Integer id_Factura) {
-        facturaService.eliminarFactura(id_Factura);
+        iFacturaService.eliminarFactura(id_Factura);
         return ResponseEntity.noContent().build();
     }
 }

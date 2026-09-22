@@ -16,18 +16,18 @@ import java.util.List;
 public class DetalleFacturaController {
 
     @Autowired
-    IDetalleFacturaService detalleFacturaService;
+    IDetalleFacturaService iDetalleFacturaService;
 
     //  Crear detalle de factura
     @PostMapping("/crear")
     public ResponseEntity<DetalleFacturaDTO> crearDetalles(@RequestBody DetalleFacturaDTO detalle) {
-        DetalleFacturaDTO detalleFacturaDto = detalleFacturaService.agregarDetalleFactura(detalle);
+        DetalleFacturaDTO detalleFacturaDto = iDetalleFacturaService.agregarDetalleFactura(detalle);
         return ResponseEntity.ok(detalleFacturaDto);
     }
 
     @PostMapping("/crear-lista")
     public ResponseEntity<List<DetalleFacturaDTO>> crearListaDetalles(@RequestBody List<DetalleFacturaDTO> lista) {
-        List<DetalleFacturaDTO> respuesta = detalleFacturaService.agregarListaDeTallesFactura(lista);
+        List<DetalleFacturaDTO> respuesta = iDetalleFacturaService.agregarListaDeTallesFactura(lista);
         return ResponseEntity.ok(respuesta);
     }
 }

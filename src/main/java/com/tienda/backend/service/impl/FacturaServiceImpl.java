@@ -18,10 +18,10 @@ import java.util.List;
 public class FacturaServiceImpl implements IFacturaService {
 
     @Autowired
-    private IFacturaRepository facturaRepository;
+    private IFacturaRepository iFacturaRepository;
 
     @Autowired
-    private IUsuarioRepository usuarioRepository;
+    private IUsuarioRepository iUsuarioRepository;
 
     @Autowired
     IFacturaMapper iFacturaMapper;
@@ -31,7 +31,7 @@ public class FacturaServiceImpl implements IFacturaService {
     @Override
     public FacturaDTO agregarFactura(FacturaDTO facturaDto) {
         // 1. Buscar el usuario REAL desde la BD
-        UsuarioEntity usuarioEnt = usuarioRepository.findById(facturaDto.getId_Usuario()).
+        UsuarioEntity usuarioEnt = iUsuarioRepository.findById(facturaDto.getId_Usuario()).
                 orElseThrow(() -> new RecursoNoEncontradoException("Usuario con ID °"+facturaDto.getId_Usuario()+"° No existe"));
 
         // 2. Crear la Factura, DTO → Entity
@@ -41,7 +41,7 @@ public class FacturaServiceImpl implements IFacturaService {
         facturaEnt.setUsuarioEnt(usuarioEnt); //FK
 
         // 4. Guardar Factura
-        facturaRepository.save(facturaEnt);
+        iFacturaRepository.save(facturaEnt);
 
         // 5. Retornar DTO, Entity → DTO
         FacturaDTO respuesta = iFacturaMapper.toDTOBasico(facturaEnt);
@@ -53,7 +53,7 @@ public class FacturaServiceImpl implements IFacturaService {
     public List<FacturaDTO> listarFacturasDto() {
 
         // Listamos todas las Facturas desde la BD
-        List<FacturaEntity> facturasEnt = facturaRepository.findAllConUsuario();
+        List<FacturaEntity> facturasEnt = iFacturaRepository.findAllConUsuario();
 
         // DTO → FRONTEND
         return iFacturaMapper.toDTOListBasico(facturasEnt);
@@ -64,14 +64,14 @@ public class FacturaServiceImpl implements IFacturaService {
     public FacturaDTO actuzalizarFactura(Integer id_Factura, FacturaDTO facturaDto) {
 
         // Se valida que la factura exista antes de actualizar.
-        FacturaEntity facturaEnt = facturaRepository.findById(id_Factura).
+        FacturaEntity facturaEnt = iFacturaRepository.findById(id_Factura).
                 orElseThrow(() -> new RecursoNoEncontradoException("Factura con ID -> "+ id_Factura +" No encontrada"));
 
         // DTO → ENTITY (actualización)
         iFacturaMapper.actualizarFactura(facturaDto, facturaEnt);
 
         // ENTITY → BASE DE DATOS
-        FacturaEntity facturaActualizada = facturaRepository.save(facturaEnt);
+        FacturaEntity facturaActualizada = iFacturaRepository.save(facturaEnt);
 
         // ENTITY → DTO
         return iFacturaMapper.toDTOBasico(facturaActualizada);
@@ -82,11 +82,11 @@ public class FacturaServiceImpl implements IFacturaService {
     public void eliminarFactura(Integer id_Factura) {
 
         // Se valida que la factura exista antes de eliminar.
-        FacturaEntity facturaEnt = facturaRepository.findById(id_Factura).
+        FacturaEntity facturaEnt = iFacturaRepository.findById(id_Factura).
                 orElseThrow(() -> new RecursoNoEncontradoException("Factura con ID -> "+ id_Factura +" No encontrada"));
 
         // Se elimina la Factura.
-        facturaRepository.delete(facturaEnt);
+        iFacturaRepository.delete(facturaEnt);
 
     }
 }
