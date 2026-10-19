@@ -23,16 +23,16 @@ public class UsuarioEntity {
     @Column(name = "id_Usuario")
     private Long id_Usuario; //PK
 
-    @Column(name = "nombre")
+    @Column(name = "nombre", nullable = false)
     private String nombre;
 
-    @Column(name = "apellido")
+    @Column(name = "apellido", nullable = false)
     private String apellido;
 
-    @Column(name = "sexo")
-    private char sexo;
+    @Column(name = "sexo", nullable = false)
+    private String sexo;
 
-    @Column(name = "telefono")
+    @Column(name = "telefono", nullable = false)
     private String telefono;
 
     //Campos para Login
@@ -42,7 +42,7 @@ public class UsuarioEntity {
     @Column(name = "password", nullable = false)
     private String password;
 
-    // Relaciones
+    // RelacionesFacturaDTO
 
     // Relacion con la tabala FacturaEntity
     @OneToMany(mappedBy = "usuarioEnt", fetch = FetchType.LAZY)

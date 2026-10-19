@@ -16,24 +16,41 @@ import java.util.Set;
 public interface IFacturaMapper {
 
     // Dto -> Entity, ignoramos id_Factura porque es autoincremental, y usuarioEnt para id_Usuario ya que lo manejamos desde el service
+    // y totalFactura porque es un valor calculado por el sistema (se actualiza con iFacturaRepository.actualizarTotal al agregar detalles), nunca debe venir del cliente
     @Mapping(target = "id_Factura", ignore = true)
-    @Mapping(target = "listaDetallesFacturas", ignore = true)
     @Mapping(target = "usuarioEnt", ignore = true)
+    @Mapping(target = "totalFactura", ignore = true)
+    @Mapping(target = "listaDetallesFacturas", ignore = true)
     FacturaEntity toEntity(FacturaDTO facturaDto);
 
-    // Convierte únicamente los datos básicos de la factura. (sin incluir sus detalles).
-    @Named("facturaSinDetalles")
+    @Named("facturaSinDetallesNiUsuario")
     @Mapping(target = "id_Usuario", source = "usuarioEnt.id_Usuario")
+    @Mapping(target = "nombre", ignore = true)
+    @Mapping(target = "apellido", ignore = true)
+    @Mapping(target = "telefono", ignore = true)
     @Mapping(target = "listaDetallesFacturas", ignore = true)
     FacturaDTO toDTOBasico(FacturaEntity facturaEnt);
+
+    // Convierte únicamente los datos básicos de la factura. (sin incluir sus detalles, pero si los datos del usuario, lo usamos en agregarFactura).
+    @Named("facturaSinDetalles")
+    @Mapping(target = "id_Usuario", source = "usuarioEnt.id_Usuario")
+    @Mapping(target = "nombre", source = "usuarioEnt.nombre")
+    @Mapping(target = "apellido", source = "usuarioEnt.apellido")
+    @Mapping(target = "telefono", source = "usuarioEnt.telefono")
+    @Mapping(target = "listaDetallesFacturas", ignore = true)
+    FacturaDTO toDTOBasicoConUsuario(FacturaEntity facturaEnt);
 
     // Convierte la factura con toda su información relacionada. (incluyendo sus detalles).
     @Named("facturaConDetalles")
     @Mapping(target = "id_Usuario", source = "usuarioEnt.id_Usuario")
+    @Mapping(target = "nombre", ignore = true)
+    @Mapping(target = "apellido", ignore = true)
+    @Mapping(target = "telefono", ignore = true)
     FacturaDTO toDTOConDetalles(FacturaEntity facturaEnt);
 
     // Ignora los campos que no deben modificarse. Actualiza únicamente los datos editables de la factura.
     @Mapping(target = "id_Factura", ignore = true)
+    @Mapping(target = "totalFactura", ignore = true)
     @Mapping(target = "listaDetallesFacturas", ignore = true)
     @Mapping(target = "usuarioEnt", ignore = true)
     void actualizarFactura(FacturaDTO facturaDto, @MappingTarget FacturaEntity facturaEnt);
@@ -47,6 +64,6 @@ public interface IFacturaMapper {
     Set<FacturaDTO> toDTOSetCompleto(Set<FacturaEntity> facturaEntities);
 
     // Convierte un conjunto de facturas con información básica.
-    @IterableMapping(qualifiedByName = "facturaSinDetalles")
+    @IterableMapping(qualifiedByName = "facturaSinDetallesNiUsuario")
     Set<FacturaDTO> toDTOSetBasico(Set<FacturaEntity> facturaEntities);
 }

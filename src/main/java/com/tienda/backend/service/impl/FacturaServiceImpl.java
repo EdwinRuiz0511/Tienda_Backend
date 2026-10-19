@@ -44,7 +44,7 @@ public class FacturaServiceImpl implements IFacturaService {
         iFacturaRepository.save(facturaEnt);
 
         // 5. Retornar DTO, Entity → DTO
-        FacturaDTO respuesta = iFacturaMapper.toDTOBasico(facturaEnt);
+        FacturaDTO respuesta = iFacturaMapper.toDTOBasicoConUsuario(facturaEnt);
 
         return respuesta;
     }
@@ -67,14 +67,18 @@ public class FacturaServiceImpl implements IFacturaService {
         FacturaEntity facturaEnt = iFacturaRepository.findById(id_Factura).
                 orElseThrow(() -> new RecursoNoEncontradoException("Factura con ID -> "+ id_Factura +" No encontrada"));
 
+        UsuarioEntity usuarioEnt = iUsuarioRepository.findById(facturaDto.getId_Usuario())
+                .orElseThrow(() -> new RecursoNoEncontradoException("Usuario con ID --> °"+facturaDto.getId_Usuario()+"° No existe"));
+
         // DTO → ENTITY (actualización)
         iFacturaMapper.actualizarFactura(facturaDto, facturaEnt);
+        facturaEnt.setUsuarioEnt(usuarioEnt);
 
         // ENTITY → BASE DE DATOS
         FacturaEntity facturaActualizada = iFacturaRepository.save(facturaEnt);
 
         // ENTITY → DTO
-        return iFacturaMapper.toDTOBasico(facturaActualizada);
+        return iFacturaMapper.toDTOBasicoConUsuario(facturaActualizada);
     }
 
     @Override

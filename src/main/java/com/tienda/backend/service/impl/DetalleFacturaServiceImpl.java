@@ -140,7 +140,7 @@ public class DetalleFacturaServiceImpl implements IDetalleFacturaService {
 
             // Calcular subtotal
             Float subtotal  = (float) (detalleFacturaDto.getCantProductos() * productosEntity.getPrecio());
-            detalleFacturaEnt.setTotal(subtotal );
+            detalleFacturaEnt.setTotal(subtotal);
 
             // Agregar a lista de guardado
             detallesGuardar.add(detalleFacturaEnt);

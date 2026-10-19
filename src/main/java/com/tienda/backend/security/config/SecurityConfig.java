@@ -50,7 +50,7 @@ public class SecurityConfig {
                         // 👑 SOLO ADMIN
                         .requestMatchers("/usuarios/**",
                                 "/facturas/**",
-                                "/productos/**",
+                                "/producto/**",
                                 "/detalle-factura/**",
                                 "/carga-csv/**"
                         ).hasRole("ADMIN")

@@ -2,6 +2,7 @@ package com.tienda.backend.controller;
 
 import com.tienda.backend.dto.FacturaDTO;
 import com.tienda.backend.service.IFacturaService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +17,7 @@ public class FacturaController {
     IFacturaService iFacturaService;
 
     @PostMapping("/agregarFactura")
-    public ResponseEntity<FacturaDTO> agregarFactura(@RequestBody FacturaDTO facturaDto) {
+    public ResponseEntity<FacturaDTO> agregarFactura(@Valid @RequestBody FacturaDTO facturaDto) {
         FacturaDTO agregarFactura = iFacturaService.agregarFactura(facturaDto);
         return ResponseEntity.ok(agregarFactura);
     }
@@ -28,7 +29,7 @@ public class FacturaController {
     }
 
     @PutMapping("/actualizarFactura/{id_Factura}")
-    public ResponseEntity<FacturaDTO> actualizarFactura (@PathVariable Integer id_Factura, @RequestBody FacturaDTO facturaDto) {
+    public ResponseEntity<FacturaDTO> actualizarFactura (@PathVariable Integer id_Factura,@Valid @RequestBody FacturaDTO facturaDto) {
         FacturaDTO facturaActualizada  = iFacturaService.actuzalizarFactura(id_Factura, facturaDto);
         return ResponseEntity.ok(facturaActualizada);
     }

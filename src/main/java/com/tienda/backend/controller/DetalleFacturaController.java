@@ -2,6 +2,7 @@ package com.tienda.backend.controller;
 
 import com.tienda.backend.dto.DetalleFacturaDTO;
 import com.tienda.backend.service.IDetalleFacturaService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,13 +21,13 @@ public class DetalleFacturaController {
 
     //  Crear detalle de factura
     @PostMapping("/crear")
-    public ResponseEntity<DetalleFacturaDTO> crearDetalles(@RequestBody DetalleFacturaDTO detalle) {
+    public ResponseEntity<DetalleFacturaDTO> crearDetalles(@Valid @RequestBody DetalleFacturaDTO detalle) {
         DetalleFacturaDTO detalleFacturaDto = iDetalleFacturaService.agregarDetalleFactura(detalle);
         return ResponseEntity.ok(detalleFacturaDto);
     }
 
     @PostMapping("/crear-lista")
-    public ResponseEntity<List<DetalleFacturaDTO>> crearListaDetalles(@RequestBody List<DetalleFacturaDTO> lista) {
+    public ResponseEntity<List<DetalleFacturaDTO>> crearListaDetalles(@Valid @RequestBody List<DetalleFacturaDTO> lista) {
         List<DetalleFacturaDTO> respuesta = iDetalleFacturaService.agregarListaDeTallesFactura(lista);
         return ResponseEntity.ok(respuesta);
     }

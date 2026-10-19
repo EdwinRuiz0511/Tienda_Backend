@@ -19,18 +19,18 @@ public class DetalleFacturaEntity {
     @Column(name = "Id_DetalleFactura")
     private Long id_DetalleFac;
 
-    @Column(name = "cant_Productos")
+    @Column(name = "cant_Productos", nullable = false)
     private int cantProductos;
 
     @Column(name = "total", nullable = false)
     private Float total;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "id_Factura") //FK
+    @JoinColumn(name = "id_Factura", nullable = false) //FK
     private FacturaEntity facturaEnt;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "id_Productos") //Fk
+    @JoinColumn(name = "id_Productos", nullable = false) //Fk
     private ProductosEntity productosEnt;
 
 

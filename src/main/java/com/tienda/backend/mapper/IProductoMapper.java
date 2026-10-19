@@ -19,9 +19,9 @@ public interface IProductoMapper {
     @Mapping(target = "listaDetalleFacturaEnt", ignore = true)
     ProductosEntity toEntity(ProductosDTO productosDto);
 
-    List<ProductosDTO> toDTOList(List<ProductosEntity> productosEntities);
-
     @Mapping(target = "id_Producto", ignore = true)
     @Mapping(target = "listaDetalleFacturaEnt", ignore = true)
     void actualizarProducto(ProductosDTO productosDto, @MappingTarget ProductosEntity productosEnt);  // @MappingTarget → actualiza un objeto existente → no retorna nada (void).
+
+    List<ProductosDTO> toDTOList(List<ProductosEntity> productosEntities);
 }

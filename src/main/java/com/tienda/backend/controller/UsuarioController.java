@@ -2,6 +2,7 @@ package com.tienda.backend.controller;
 
 import com.tienda.backend.dto.UsuarioDTO;
 import com.tienda.backend.service.IUsuarioService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -41,7 +42,7 @@ public class UsuarioController {
 
 
     @PutMapping("/actualizar/{id_Usuario}")
-    public ResponseEntity<UsuarioDTO> actualizarUsuario(@PathVariable Long id_Usuario, @RequestBody UsuarioDTO usuarioDto) {
+    public ResponseEntity<UsuarioDTO> actualizarUsuario(@PathVariable Long id_Usuario, @Valid @RequestBody UsuarioDTO usuarioDto) {
         UsuarioDTO usuarioActualizado = iUsuarioService.actuzalizarUsuario(id_Usuario, usuarioDto);
         return  ResponseEntity.ok(usuarioActualizado);
     }

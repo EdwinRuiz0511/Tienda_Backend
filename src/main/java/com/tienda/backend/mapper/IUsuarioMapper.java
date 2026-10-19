@@ -22,7 +22,7 @@ public interface IUsuarioMapper {
     @Named("usuarioBasico")
     @Mapping(target = "listaDeFacturas", ignore = true)
     @Mapping(target = "nombreRol", source = "rolEnt.nombreRol")
-    //@Mapping(target = "password", ignore = true)
+    @Mapping(target = "password", ignore = true)
     UsuarioDTO toDTOBasico(UsuarioEntity usuarioEnt);
 
     // nombreRol necesita @Mapping porque hay que atravesar rolEnt para llegar a él.
@@ -32,13 +32,15 @@ public interface IUsuarioMapper {
     // Convierte el usuario junto con sus facturas (sin incluir sus detalles).
     // Usado por: listar_Usuarios_Factu_PorId
     @Named("usuarioConFacturas")
-    @Mapping(target = "listaDeFacturas", source = "listaDeFacturas", qualifiedByName = "facturaSinDetalles")
+    @Mapping(target = "password", ignore = true)
+    @Mapping(target = "listaDeFacturas", source = "listaDeFacturas", qualifiedByName = "facturaSinDetallesNiUsuario")
     @Mapping(target = "nombreRol",source = "rolEnt.nombreRol")
     UsuarioDTO toDTOConFacturas(UsuarioEntity usuarioEnT);
 
     // Convierte Usuario CON facturas Y detalles --> Usuario + Facturas + Detalles
     // Usado por: listar_Usuarios_Factu_Detall_PorId
     @Named("usuarioCompleto")
+    @Mapping(target = "password", ignore = true)
     @Mapping(target = "listaDeFacturas", source = "listaDeFacturas", qualifiedByName = "facturaConDetalles")
     @Mapping(target = "nombreRol", source = "rolEnt.nombreRol")
     UsuarioDTO toDTOCompleto(UsuarioEntity usuarioEnt);

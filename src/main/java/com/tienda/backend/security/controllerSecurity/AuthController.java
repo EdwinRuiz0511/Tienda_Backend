@@ -50,7 +50,7 @@ public class AuthController {
             //  Devolver el token
             return ResponseEntity.ok(Map.of("token", token));
 
-            //return ResponseEntity.ok("Login exitoso ✅ Usuario autenticado");
+            //return ResponseEntity.ok("Login exitoso: Usuario autenticado");
 
         }catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Error: " + e.getMessage());
@@ -62,6 +62,6 @@ public class AuthController {
 
         usuarioService.registrarUsuario(registerRequestDTO);
 
-        return ResponseEntity.ok().body(Map.of("mensaje", "✅ Usuario registrado correctamente"));
+        return ResponseEntity.ok().body(Map.of("mensaje", "Usuario registrado correctamente"));
     }
 }

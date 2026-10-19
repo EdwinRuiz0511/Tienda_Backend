@@ -64,7 +64,7 @@ public class ProductoServiceImpl implements IProductoService {
         Optional<ProductosEntity> productoExistente = iProductosRepository.findByNombreProducto(productosDto.getNombreProducto());
 
         if (productoExistente.isPresent()) {
-            throw new RecursoDuplicadoException("Error: El producto ya existe");
+            throw new RecursoDuplicadoException("El producto --> °"+productosDto.getNombreProducto()+"° YA existe");
         }
 
         // Creamos el producto dto -> entity

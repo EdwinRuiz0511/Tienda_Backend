@@ -77,31 +77,32 @@ public class CsvProcesadorService {
                     ));
 
             // Guarda todos los productos en la base de datos
-            iProductosRepository.saveAll(productosSinDuplicados.values());
+            iProductosRepository.saveAll(productosSinDuplicados.values());                                              // Utilizamos .values ya que extrae solo los productos (valores) del mapa, porque saveAll() espera una coleccion, no un Map
 
-            // Actualiza el registro de seguimiento: pasa de PENDIENTE a EXITOSO,
+            // Actualiza el registro de seguimiento: pasa de PENDIENTE a EXITOSOfi
             // guardando cuántas filas traía el archivo original y cuántos productos se guardaron de verdad
             iCargaCsvService.marcarComoExitosa(idCarga, filas.size(), productosSinDuplicados.size());
 
 
             // Registra la cantidad de productos guardados
-            log.info("\n\n\tRespuesta: CSV procesado correctamente: {} productos guardados", productosSinDuplicados.size());
+            log.info("Respuesta: CSV procesado correctamente: {} productos originales", filas.size());
+            log.info("Respuesta: CSV procesado correctamente: {} productos guardados", productosSinDuplicados.size());
 
         } catch (DataIntegrityViolationException e) {
-            log.error(("\n\n\tPorducto duplicado al procesar el CSV: " + e));
+            log.error(("Porducto duplicado al procesar el CSV: " + e));
             iCargaCsvService.marcarComoError(idCarga, "Ya existe un producto con ese nombre en la base de datos");
 
         } catch (NumberFormatException e) {
-            log.error("\n\n\tPrecio inválido al procesar el CSV: " + e);
+            log.error("Precio inválido al procesar el CSV: " + e);
             iCargaCsvService.marcarComoError(idCarga, "Uno de los precios en el archivo no es un número válido");
 
         } catch (IOException e) {
-            log.error("\n\n\tError al leer el archivo CSV: " + e);
+            log.error("Error al leer el archivo CSV: " + e);
             iCargaCsvService.marcarComoError(idCarga, "No se pudo leer el archivo, intenta subirlo de nuevo");
 
         } catch (Exception e) {
             // Registra cualquier error durante el procesamiento
-            log.error("\n\n\tRespuesta: Error al procesar el archivo CSV: ", e);
+            log.error("Respuesta: Error al procesar el archivo CSV: ", e);
 
             // Actualiza el registro de seguimiento: pasa de PENDIENTE a ERROR,
             // para que cualquier admin pueda consultar qué pasó, sin necesidad de ver la consola del servidor

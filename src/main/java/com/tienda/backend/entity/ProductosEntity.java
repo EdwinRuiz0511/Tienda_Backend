@@ -23,13 +23,13 @@ public class ProductosEntity {
     @Column(name = "id_Productos")
     private Long id_Producto;
 
-    @Column(name = "nombreProducto", unique = true)
+    @Column(name = "nombreProducto", unique = true, nullable = false)
     private String nombreProducto;
 
-    @Column(name = "precio")
+    @Column(name = "precio", nullable = false)
     private double precio;
 
-    @Column(name = "categoria")
+    @Column(name = "categoria", nullable = false)
     private String categoria;
 
     @OneToMany(mappedBy = "productosEnt", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

@@ -4,6 +4,7 @@ import com.tienda.backend.dto.ProductosDTO;
 import com.tienda.backend.repository.IUsuarioRepository;
 import com.tienda.backend.service.ICargaCsvService;
 import com.tienda.backend.service.IProductoService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,7 +33,7 @@ public class ProductoController {
     }
 
     @PostMapping("/agregarProducto")
-    public ResponseEntity<ProductosDTO> agregarProducto(@RequestBody ProductosDTO producto) {
+    public ResponseEntity<ProductosDTO> agregarProducto(@Valid @RequestBody ProductosDTO producto) {
         ProductosDTO productoDto = iProductoService.agregarProducto(producto);
         return ResponseEntity.ok(productoDto);
     }
@@ -44,7 +45,7 @@ public class ProductoController {
     }
 
     @PutMapping("/actualizarProducto/{id_Productos}")
-    public ResponseEntity<ProductosDTO> actualizarProducto(@PathVariable Long id_Productos, @RequestBody ProductosDTO productosDto) {
+    public ResponseEntity<ProductosDTO> actualizarProducto(@PathVariable Long id_Productos, @Valid @RequestBody ProductosDTO productosDto) {
         ProductosDTO productoActualizado = iProductoService.actualizarProducto(id_Productos, productosDto);
         return ResponseEntity.ok(productoActualizado);
     }

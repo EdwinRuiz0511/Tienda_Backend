@@ -2,7 +2,7 @@ package com.tienda.backend.security.dtoSecurity;
 
 import com.tienda.backend.utils.Constantes;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,10 +16,11 @@ public class RegisterRequestDTO {
     @NotBlank(message = "El apellido es obligatorio")
     private String apellido;
 
-    @NotNull(message = "El sexo es obligatorio")
-    private Character  sexo;
+    @NotBlank(message = "El sexo es obligatorio")
+    @Pattern(regexp = "^[MFmf]$", message = "El sexo debe ser 'M' para masculino o 'F' para femenino")
+    private String  sexo;
 
-    @NotNull(message = "El telefono es obligatorio")
+    @NotBlank(message = "El telefono es obligatorio")
     private String  telefono;
 
     @NotBlank(message = "El username es obligatorio")

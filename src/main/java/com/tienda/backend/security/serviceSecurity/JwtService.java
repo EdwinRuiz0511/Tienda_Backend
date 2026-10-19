@@ -27,7 +27,7 @@ public class JwtService {
                 .subject(username)                                                                          // Aquí guardamos el username del usuario autenticado.
                 .claim("role", rol)
                 .issuedAt(new Date())                                                                       // Fecha en que el token fue creado.
-                .expiration(new Date(System.currentTimeMillis() + timeExpiration))//30min                   // Fecha de expiración.
+                .expiration(new Date(System.currentTimeMillis() + timeExpiration))                          // Fecha de expiración.
                 .signWith(obtenerClaveSecreta(), SignatureAlgorithm.HS256)                                  // Firma el token con tu clave secreta.
                 .compact();                                                                                 // Empaqueta todo en un Sprinf tipo: eyJhbGciOiJIUzI1NiJ9...
     }
