@@ -42,9 +42,9 @@ public class UsuarioEntity {
     @Column(name = "password", nullable = false)
     private String password;
 
-    // RelacionesFacturaDTO
+    // Relaciones
 
-    // Relacion con la tabala FacturaEntity
+    // Relacion con la tabla FacturaEntity
     @OneToMany(mappedBy = "usuarioEnt", fetch = FetchType.LAZY)
     @JsonIgnore
     Set<FacturaEntity> listaDeFacturas = new HashSet<>();

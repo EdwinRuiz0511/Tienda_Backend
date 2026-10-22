@@ -75,7 +75,6 @@ public class JwtService {
         } catch (Exception e) {                                                             // Error interno
             log.error("Error inesperado validando JWT: {}", e);
         }
-
         return false;
     }
 }

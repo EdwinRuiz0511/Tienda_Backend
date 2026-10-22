@@ -1,6 +1,8 @@
 package com.tienda.backend.security.config;
 
 import com.tienda.backend.security.filter.JwtAuthenticationFilter;
+import com.tienda.backend.security.serviceSecurity.CustomAccessDeniedHandler;
+import com.tienda.backend.security.serviceSecurity.CustomAuthenticationEntryPoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,17 +26,32 @@ public class SecurityConfig {
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
 
+    @Autowired
+    private CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+
+    @Autowired
+    private CustomAccessDeniedHandler customAccessDeniedHandler;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
+                // Habilita CORS usando la configuración personalizada definida abajo
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
+                // Desactiva CSRF: no es necesario en una API stateless autenticada con JWT
                 .csrf(csrf -> csrf.disable())
 
                 //Se deshabilitan las HttpSession para que cada petición sea validada únicamente a través del token JWT.
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
+                // Reemplaza el manejo de errores por defecto de Spring Security: distingue entre
+                // "no autenticado" (token inválido o ausente → 401, CustomAuthenticationEntryPoint)
+                // y "autenticado pero sin permiso" (rol insuficiente → 403, CustomAccessDeniedHandler)
+                .exceptionHandling(exceptions -> exceptions
+                        .authenticationEntryPoint(customAuthenticationEntryPoint)
+                        .accessDeniedHandler(customAccessDeniedHandler))
 
                 .authorizeHttpRequests(auth -> auth
                         // 🔓 ENDPOINTS PÚBLICOS
@@ -92,45 +109,3 @@ public class SecurityConfig {
     }
 }
 
-/*
-
-🛡️ SecurityConfig:
-    Esta clase define las reglas de seguridad de tu aplicación.
-    Es como el portero del edificio:
-    Decide quién puede entrar.
-    Qué puertas están abiertas.
-    Qué puertas requieren identificación.
-    Cómo se validan las contraseñas.
-    Qué motor se usa para autenticar usuarios.
-
-🚫csrf -> csrf.disable():
-    CSRF protege formularios tradicionales (cookies).
-    Cuando usas JWT (API REST) normalmente NO lo necesitas.
-    Por eso se desactiva.
-    Si no lo desactivas, te puede bloquear peticiones POST, PUT, DELETE.
-
-🔓.requestMatchers("/auth/**").permitAll():
-    Cualquier endpoint que empiece por:
-    /auth/login
-    /auth/register
-    /auth/refresh
-    No necesita token, Puede entrar cualquier persona.
-    Esto es obligatorio, porque si no: Nadie podría ni siquiera loguearse.
-
-🔒 anyRequest().authenticated():
-    Esto significa:
-    Cualquier otra ruta: /productos, /facturas, /usuarios
-    Debe venir con un usuario autenticado (token válido).
-
-🧱 return http.build():
-    Construye la configuración final y se la entrega a Spring.
-
-
-    http.csrf(csrf -> csrf.disable()).
-                authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll());
-
-
-  "/usuarios/**"
-
-*/

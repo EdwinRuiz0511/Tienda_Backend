@@ -42,21 +42,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        String token = authHeader.substring(7);                                                 // EXTRAER EL TOKEN (quitamos la palabra "Bearer "): "Bearer " son 7 caracteres (incluyendo el espacio).
-        String username = jwtService.extraerUsername(token);                                              // Obtener username desde el token
+        String token = authHeader.substring(7);                                                               // Extrae el JWT puro, sin el prefijo "Bearer "
+        if (jwtService.tokenEsValido(token)) {                                                                          // Primero valida de forma segura (ya tiene try/catch adentro)
+            String username = jwtService.extraerUsername(token);                                                        // Solo si es válido, extrae el username
 
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {         // Si hay usuario y aún no está autenticado
-            UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);              // Cargar datos del usuario desde BD
+            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {                   // Evita re-autenticar si ya hay una autenticación en curso
+                UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);                        // Carga los datos reales del usuario desde la base de datos
 
-            if (jwtService.tokenEsValido(token)) {                                                        // Validar que el token sea válido
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken   // Crear objeto de autenticación
+                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken                 // Crea el objeto de autenticación que Spring Security entiende
                         (userDetails, null, userDetails.getAuthorities());
 
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));         // Asociar detalles de la petición
-                SecurityContextHolder.getContext().setAuthentication(authToken);                          // Guardar autenticación en el contexto
+                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));                       // Asocia detalles de la petición (IP, sesión) a la autenticación
+                SecurityContextHolder.getContext().setAuthentication(authToken);                                        // Guarda la autenticación: de acá en adelante, el usuario queda identificado
             }
         }
-        filterChain.doFilter(request, response);                                                          // Continuar con la petición
+        filterChain.doFilter(request, response);                                                                        // Continuar con la petición                                                                      // Continuar con la petición
     }
 }
 
