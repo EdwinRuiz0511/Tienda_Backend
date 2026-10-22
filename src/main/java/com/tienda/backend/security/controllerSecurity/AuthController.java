@@ -32,29 +32,16 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequestDTO loginRequestDTO) {
 
-        try {
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            loginRequestDTO.getUsername(),
-                            loginRequestDTO.getPassword()));
+        Authentication authentication = authenticationManager.authenticate(                                             // Si las credenciales son inválidas, lanza BadCredentialsException (la atrapa GlobalExceptionHandler)
+                new UsernamePasswordAuthenticationToken(
+                        loginRequestDTO.getUsername(),
+                        loginRequestDTO.getPassword()));
 
-            //  Sacar el usuario autenticado
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();                                          // Sacar el usuario autenticado
+        String rol = userDetails.getAuthorities().iterator().next().getAuthority();                                     // Obtener el rol (IMPORTANTE)
+        String token = jwtService.generarToken(userDetails.getUsername(), rol);                                         // Generar token con rol
 
-            //  Obtener el rol (IMPORTANTE)
-            String rol = userDetails.getAuthorities().iterator().next().getAuthority();
-
-            //  Generar token con rol
-            String token = jwtService.generarToken(userDetails.getUsername(), rol);
-
-            //  Devolver el token
-            return ResponseEntity.ok(Map.of("token", token));
-
-            //return ResponseEntity.ok("Login exitoso: Usuario autenticado");
-
-        }catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Error: " + e.getMessage());
-        }
+        return ResponseEntity.ok(Map.of("token", token));                                                           // Devolver el token
     }
 
     @PostMapping("/registrar")
@@ -65,3 +52,4 @@ public class AuthController {
         return ResponseEntity.ok().body(Map.of("mensaje", "Usuario registrado correctamente"));
     }
 }
+

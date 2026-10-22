@@ -21,7 +21,7 @@ public class JwtService {
     @Value("${jwt.time.expiration}")
     private long timeExpiration;
 
-    // 🔐 Generar token
+    // Generar token
     public String generarToken(String username, String rol) {
         return Jwts.builder()
                 .subject(username)                                                                          // Aquí guardamos el username del usuario autenticado.
@@ -33,7 +33,7 @@ public class JwtService {
     }
 
     // Obtener firma del token
-    public SecretKey obtenerClaveSecreta() {
+    private SecretKey obtenerClaveSecreta() {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);                                                // Convierte el string Base64 a bytes
         return Keys.hmacShaKeyFor(keyBytes);
     }
@@ -49,10 +49,6 @@ public class JwtService {
 
     public String extraerUsername(String token) {
         return extraerClaims(token).getSubject();
-    }
-
-    public String extraerRol(String token) {
-        return extraerClaims(token).get("role", String.class);
     }
 
     public boolean tokenEsValido(String token) {

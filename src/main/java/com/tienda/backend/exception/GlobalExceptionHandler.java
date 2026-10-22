@@ -6,6 +6,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.method.ParameterValidationResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -107,6 +108,13 @@ public class  GlobalExceptionHandler {
     public ResponseEntity<?> manejarFormatoInvalido(HttpMessageNotReadableException ex) {
         log.warn("No se pudo leer el cuerpo de la solicitd: {}", ex.getMessage());
         return construirRespuesta(HttpStatus.BAD_REQUEST, "El formato de los datos enviados no es valido");
+    }
+
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<?> manejarCredencialesInvalidasEnLogin(BadCredentialsException ex) {
+        log.warn("Intento de login con credenciales Invalidas");
+        return construirRespuesta(HttpStatus.UNAUTHORIZED, "Usuario o contraseña incorrectos");
     }
 
     // Red de seguridad final: cualquier excepción no prevista por los handlers de arriba → 500
