@@ -9,8 +9,11 @@ import com.tienda.backend.mapper.IUsuarioMapper;
 import com.tienda.backend.repository.IRolRepository;
 import com.tienda.backend.repository.IUsuarioRepository;
 import com.tienda.backend.security.dtoSecurity.RegisterRequestDTO;
+import com.tienda.backend.security.serviceSecurity.SecurityUtils;
 import com.tienda.backend.service.IUsuarioService;
+import com.tienda.backend.utils.RolesConstantes;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,16 +24,19 @@ import java.util.List;
 public class UsuarioServiceImpl implements IUsuarioService {
 
     @Autowired
-    IUsuarioRepository iUsuarioRepository;
+    private IUsuarioRepository iUsuarioRepository;
 
     @Autowired
-    IRolRepository iRolRepository;
+    private IRolRepository iRolRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Autowired
-    IUsuarioMapper iUsuarioMapper;
+    private IUsuarioMapper iUsuarioMapper;
+
+    @Autowired
+    private SecurityUtils securityUtils;
 
     //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -42,8 +48,8 @@ public class UsuarioServiceImpl implements IUsuarioService {
         }
 
         // 2. Buscar rol USER (por seguridad, todo usuario registrado es USER)
-        RolEntity rolEnt = iRolRepository.findByNombreRol("USER")
-                .orElseThrow(() -> new RecursoNoEncontradoException("Rol --> USER no existe"));
+        RolEntity rolEnt = iRolRepository.findByNombreRol(RolesConstantes.USER)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Rol --> " + RolesConstantes.USER + " no existe"));
 
         // 3. Crear entidad Usuario:
         UsuarioEntity usuarioEnt = new UsuarioEntity();
@@ -81,6 +87,9 @@ public class UsuarioServiceImpl implements IUsuarioService {
         UsuarioEntity usuarioEnt = iUsuarioRepository.findByIdConFacturas(id_Usuario)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Usuario con ID -> "+id_Usuario+" No encontrado"));
 
+        // Rechaza si quien pregunta no es ni el dueño de estos datos ni un ADMIN
+        validarPropietarioOAdmin(usuarioEnt);
+
         // DTO → FRONTEND
         return iUsuarioMapper.toDTOConFacturas(usuarioEnt);
     }
@@ -92,6 +101,9 @@ public class UsuarioServiceImpl implements IUsuarioService {
         //Buscamos al Usuario por su Id en la BD
         UsuarioEntity usuarioEnt = iUsuarioRepository.findByIdConFacturasYDetalles(id_Usuario)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Usuario con ID -> "+id_Usuario+ " No encontrado"));
+
+        // Rechaza si quien pregunta no es ni el dueño de estos datos ni un ADMIN
+        validarPropietarioOAdmin(usuarioEnt);
 
         // DTO → FRONTEND
         return iUsuarioMapper.toDTOCompleto(usuarioEnt);
@@ -124,6 +136,16 @@ public class UsuarioServiceImpl implements IUsuarioService {
 
         // Se elimina el registro
         iUsuarioRepository.delete(usuarioEnt);
+    }
+
+    // Lanza AccessDeniedException si quien pregunta no es ni el dueño de los datos ni un ADMIN
+    private void validarPropietarioOAdmin(UsuarioEntity usuarioEnt) {
+        String usernameAutenticado = securityUtils.obtenerUsernameAutenticado();
+        boolean esPropietario = usuarioEnt.getUsername().equals(usernameAutenticado);
+
+        if (!securityUtils.esAdministrador() && !esPropietario) {
+            throw new AccessDeniedException("No tiene permiso para consultar la informacion de otro Usuario");
+        }
     }
 }
 

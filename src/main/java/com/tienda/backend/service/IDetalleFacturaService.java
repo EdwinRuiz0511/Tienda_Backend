@@ -8,5 +8,5 @@ public interface IDetalleFacturaService {
 
     DetalleFacturaDTO agregarDetalleFactura(DetalleFacturaDTO detalleFacturaDto);
 
-    List<DetalleFacturaDTO> agregarListaDeTallesFactura(List<DetalleFacturaDTO> listaDetallesFactura);
+    List<DetalleFacturaDTO> agregarListaDetallesFactura(List<DetalleFacturaDTO> listaDetallesFactura);
 }

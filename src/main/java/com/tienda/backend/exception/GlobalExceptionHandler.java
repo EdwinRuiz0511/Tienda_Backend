@@ -6,6 +6,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.method.ParameterValidationResult;
@@ -106,16 +107,22 @@ public class  GlobalExceptionHandler {
     // (ej. mandar texto donde se espera un número) → 400
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<?> manejarFormatoInvalido(HttpMessageNotReadableException ex) {
-        log.warn("No se pudo leer el cuerpo de la solicitd: {}", ex.getMessage());
+        log.warn("No se pudo leer el cuerpo de la solicitud: {}", ex.getMessage());
         return construirRespuesta(HttpStatus.BAD_REQUEST, "El formato de los datos enviados no es valido");
     }
 
-
+    // Credenciales inválidas en el login (usuario inexistente o contraseña incorrecta) → 401
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<?> manejarCredencialesInvalidasEnLogin(BadCredentialsException ex) {
         log.warn("Intento de login con credenciales Invalidas");
         return construirRespuesta(HttpStatus.UNAUTHORIZED, "Usuario o contraseña incorrectos");
     }
+
+    @ExceptionHandler(AccessDeniedException.class)
+     public ResponseEntity<?> manejarAccesoDenegado(AccessDeniedException ex) {
+        log.warn("Intento de acceso no autorizado: {}", ex.getMessage());
+        return construirRespuesta(HttpStatus.FORBIDDEN, ex.getMessage());
+     }
 
     // Red de seguridad final: cualquier excepción no prevista por los handlers de arriba → 500
     @ExceptionHandler(Exception.class)
@@ -126,7 +133,7 @@ public class  GlobalExceptionHandler {
 
     // Método auxiliar privado: arma el JSON de respuesta estándar (fecha, código, error, mensaje)
     // para todos los handlers que no necesitan el mapa extra de "errores" por campo
-    private ResponseEntity<?> construirRespuesta(HttpStatus status,  String mensaje) {
+    private ResponseEntity<?> construirRespuesta(HttpStatus status, String mensaje) {
 
         Map<String, Object> body = new LinkedHashMap<>();                                                               // Usamos LinkedHashMap, para garantizar el orden en la respuesta JSON
         body.put("fecha", LocalDateTime.now());

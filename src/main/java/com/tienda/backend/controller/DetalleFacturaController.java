@@ -28,7 +28,7 @@ public class DetalleFacturaController {
 
     @PostMapping("/crear-lista")
     public ResponseEntity<List<DetalleFacturaDTO>> crearListaDetalles(@Valid @RequestBody List<DetalleFacturaDTO> lista) {
-        List<DetalleFacturaDTO> respuesta = iDetalleFacturaService.agregarListaDeTallesFactura(lista);
+        List<DetalleFacturaDTO> respuesta = iDetalleFacturaService.agregarListaDetallesFactura(lista);
         return ResponseEntity.ok(respuesta);
     }
 }

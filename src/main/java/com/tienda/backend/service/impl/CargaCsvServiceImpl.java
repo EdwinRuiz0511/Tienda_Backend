@@ -23,6 +23,8 @@ public class CargaCsvServiceImpl implements ICargaCsvService {
     @Autowired
     private ICargaCsvMapper iCargaCsvMapper;
 
+    //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
     @Override
     public Long crearCargaPendiente(String nombreArchivo, UsuarioEntity usuarioEnt) {
         CargaCsvEntity cargaCsvEnt = new CargaCsvEntity();

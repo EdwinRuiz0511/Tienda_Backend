@@ -54,6 +54,8 @@ public class CsvProcesadorService {
     @Autowired
     private ICargaCsvService iCargaCsvService;
 
+    //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
     @Async                                                                                                              // Este método corre en segundo plano, para que la página no se congele mientras se procesa el archivo
     public void guardarCsv(MultipartFile file, Long idCarga) {
 
@@ -89,7 +91,7 @@ public class CsvProcesadorService {
             log.info("Respuesta: CSV procesado correctamente: {} productos guardados", productosSinDuplicados.size());
 
         } catch (DataIntegrityViolationException e) {
-            log.error(("Porducto duplicado al procesar el CSV: " + e));
+            log.error(("Producto duplicado al procesar el CSV: " + e));
             iCargaCsvService.marcarComoError(idCarga, "Ya existe un producto con ese nombre en la base de datos");
 
         } catch (NumberFormatException e) {

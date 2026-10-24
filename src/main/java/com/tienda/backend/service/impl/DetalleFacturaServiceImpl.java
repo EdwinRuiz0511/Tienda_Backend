@@ -34,7 +34,7 @@ public class DetalleFacturaServiceImpl implements IDetalleFacturaService {
     private IProductosRepository iProductosRepository;
 
     @Autowired
-    IDetalleFacturaMapper iDetalleFacturaMapper;
+    private IDetalleFacturaMapper iDetalleFacturaMapper;
 
     //---------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -81,7 +81,7 @@ public class DetalleFacturaServiceImpl implements IDetalleFacturaService {
 
     @Override
     @Transactional                                                                                                      // 🔒 Si algo falla, se cancela TODO lo que se estaba guardando
-    public List<DetalleFacturaDTO> agregarListaDeTallesFactura(List<DetalleFacturaDTO> listaDetallesFactura) {
+    public List<DetalleFacturaDTO> agregarListaDetallesFactura(List<DetalleFacturaDTO> listaDetallesFactura) {
 
         // 1. Validar que la lista no venga vacia o nula
         if (listaDetallesFactura == null || listaDetallesFactura.isEmpty()) {

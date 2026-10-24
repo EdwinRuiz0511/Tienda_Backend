@@ -7,6 +7,7 @@ import com.tienda.backend.exception.RecursoNoEncontradoException;
 import com.tienda.backend.mapper.IFacturaMapper;
 import com.tienda.backend.repository.IFacturaRepository;
 import com.tienda.backend.repository.IUsuarioRepository;
+import com.tienda.backend.security.serviceSecurity.SecurityUtils;
 import com.tienda.backend.service.IFacturaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,7 +25,10 @@ public class FacturaServiceImpl implements IFacturaService {
     private IUsuarioRepository iUsuarioRepository;
 
     @Autowired
-    IFacturaMapper iFacturaMapper;
+    private SecurityUtils securityUtils;
+
+    @Autowired
+    private IFacturaMapper iFacturaMapper;
 
     //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -52,8 +56,16 @@ public class FacturaServiceImpl implements IFacturaService {
     @Override
     public List<FacturaDTO> listarFacturasDto() {
 
-        // Listamos todas las Facturas desde la BD
-        List<FacturaEntity> facturasEnt = iFacturaRepository.findAllConUsuario();
+        List<FacturaEntity> facturasEnt;
+
+        if (securityUtils.esAdministrador()) {
+            // El ADMIN ve las facturas de todos los usuarios
+            facturasEnt = iFacturaRepository.findAllConUsuario();
+        } else {
+            // El USER solo ve sus propias facturas
+            String username = securityUtils.obtenerUsernameAutenticado();
+            facturasEnt = iFacturaRepository.findAllConUsuarioPorUsername(username);
+        }
 
         // DTO → FRONTEND
         return iFacturaMapper.toDTOListBasico(facturasEnt);

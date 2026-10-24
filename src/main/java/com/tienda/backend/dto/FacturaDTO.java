@@ -18,7 +18,7 @@ import java.util.Set;
         "apellido",
         "telefono",
         "totalFactura",
-        "listaDetalleFacturaDTO",
+        "listaDetallesFacturas",
 
 })
 public class FacturaDTO {

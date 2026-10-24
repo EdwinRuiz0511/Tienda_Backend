@@ -32,16 +32,16 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequestDTO loginRequestDTO) {
 
-        Authentication authentication = authenticationManager.authenticate(                                             // Si las credenciales son inválidas, lanza BadCredentialsException (la atrapa GlobalExceptionHandler)
+        Authentication authentication = authenticationManager.authenticate(                                                 // Si las credenciales son inválidas, lanza BadCredentialsException (la atrapa GlobalExceptionHandler)
                 new UsernamePasswordAuthenticationToken(
                         loginRequestDTO.getUsername(),
                         loginRequestDTO.getPassword()));
 
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();                                          // Sacar el usuario autenticado
-        String rol = userDetails.getAuthorities().iterator().next().getAuthority();                                     // Obtener el rol (IMPORTANTE)
-        String token = jwtService.generarToken(userDetails.getUsername(), rol);                                         // Generar token con rol
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();                                              // Sacar el usuario autenticado
+        String rol = userDetails.getAuthorities().iterator().next().getAuthority().replace("ROLE_", "");   // Obtener el rol (IMPORTANTE)
+        String token = jwtService.generarToken(userDetails.getUsername(), rol);                                             // Generar token con rol
 
-        return ResponseEntity.ok(Map.of("token", token));                                                           // Devolver el token
+        return ResponseEntity.ok(Map.of("token", token));                                                               // Devolver el token
     }
 
     @PostMapping("/registrar")

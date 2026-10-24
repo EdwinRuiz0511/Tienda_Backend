@@ -20,16 +20,10 @@ public class ProductoController {
     @Autowired
     private IProductoService iProductoService;
 
-    @Autowired
-    private ICargaCsvService cargaCsvService;
-
-    @Autowired
-    private IUsuarioRepository iUsuarioRepository;
-
     @PostMapping("/upload")
     public ResponseEntity<Map<String, Object>> subirCsv(@RequestParam("archivoCsv") MultipartFile file) {
         Long idCarga = iProductoService.iniciarCargaCsv(file);
-        return ResponseEntity.ok(Map.of("idSeguimiento", idCarga, "mensaje", "..."));
+        return ResponseEntity.ok(Map.of("idSeguimiento", idCarga, "mensaje", "Carga iniciada, consultá el estado con el idSeguimiento"));
     }
 
     @PostMapping("/agregarProducto")

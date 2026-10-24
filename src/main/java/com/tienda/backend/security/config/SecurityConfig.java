@@ -3,6 +3,7 @@ package com.tienda.backend.security.config;
 import com.tienda.backend.security.filter.JwtAuthenticationFilter;
 import com.tienda.backend.security.serviceSecurity.CustomAccessDeniedHandler;
 import com.tienda.backend.security.serviceSecurity.CustomAuthenticationEntryPoint;
+import com.tienda.backend.utils.RolesConstantes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -62,7 +63,7 @@ public class SecurityConfig {
                                 "/facturas/**",
                                 "/usuarios/listarUsuariosConFacturas/**",
                                 "/usuarios/listarUsuariosConFacturasYDetalles/**"
-                        ).hasAnyRole("USER", "ADMIN")
+                        ).hasAnyRole(RolesConstantes.USER, RolesConstantes.ADMIN)
 
                         // 👑 SOLO ADMIN
                         .requestMatchers("/usuarios/**",
@@ -70,7 +71,7 @@ public class SecurityConfig {
                                 "/producto/**",
                                 "/detalle-factura/**",
                                 "/carga-csv/**"
-                        ).hasRole("ADMIN")
+                        ).hasRole(RolesConstantes.ADMIN)
 
                         // 🔒 CUALQUIER OTRA PETICIÓN
                         .anyRequest().authenticated()

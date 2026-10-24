@@ -21,4 +21,7 @@ public interface IFacturaRepository extends JpaRepository <FacturaEntity, Intege
     @Query("SELECT f FROM FacturaEntity f JOIN FETCH f.usuarioEnt")
     List<FacturaEntity> findAllConUsuario();
 
+    @Query("SELECT f FROM FacturaEntity f JOIN FETCH f.usuarioEnt u WHERE u.username = :username")
+    List<FacturaEntity> findAllConUsuarioPorUsername(@Param("username") String username);
+
 }

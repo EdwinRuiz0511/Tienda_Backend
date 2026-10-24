@@ -23,7 +23,7 @@ public class FacturaController {
     }
 
     @GetMapping("/listarFacturas")
-    public ResponseEntity<List<FacturaDTO>> listarFcaturas() {
+    public ResponseEntity<List<FacturaDTO>> listarFacturas() {
         List<FacturaDTO> facturaDto = iFacturaService.listarFacturasDto();
         return ResponseEntity.ok(facturaDto);
     }

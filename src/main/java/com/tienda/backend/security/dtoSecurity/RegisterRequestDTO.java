@@ -1,6 +1,5 @@
 package com.tienda.backend.security.dtoSecurity;
 
-import com.tienda.backend.utils.Constantes;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
@@ -10,7 +9,7 @@ import lombok.Setter;
 @Setter
 public class RegisterRequestDTO {
 
-    @NotBlank(message = "|nombre| ---> " + Constantes.NOMBRE)
+    @NotBlank(message = "El nombre es obligatorio")
     private String nombre;
 
     @NotBlank(message = "El apellido es obligatorio")
