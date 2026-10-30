@@ -1,8 +1,6 @@
 package com.tienda.backend.controller;
 
 import com.tienda.backend.dto.ProductosDTO;
-import com.tienda.backend.repository.IUsuarioRepository;
-import com.tienda.backend.service.ICargaCsvService;
 import com.tienda.backend.service.IProductoService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;

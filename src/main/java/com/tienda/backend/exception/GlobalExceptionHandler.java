@@ -41,6 +41,14 @@ public class  GlobalExceptionHandler {
     public ResponseEntity<?> manejarSolicitudInvalida(SolicitudInvalidaException ex) {
         return construirRespuesta(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
+
+    // Se lanza cuando el service detecta que un recurso no se puede eliminar porque otros registros dependen de él
+    // (ej. un producto que ya aparece en detalles de factura) → 409
+    @ExceptionHandler(RecursoEnUsoException.class)
+    public ResponseEntity<?> manejarRecursoEnUso(RecursoEnUsoException ex) {
+        return construirRespuesta(HttpStatus.CONFLICT, ex.getMessage());
+    }
+
     // Red de seguridad a nivel de base de datos: salta si algo viola una restricción SQL
     // (unique=true, nullable=false) que no fue atrapada antes por el DTO → 409
     @ExceptionHandler(DataIntegrityViolationException.class)
@@ -118,6 +126,8 @@ public class  GlobalExceptionHandler {
         return construirRespuesta(HttpStatus.UNAUTHORIZED, "Usuario o contraseña incorrectos");
     }
 
+    // Se lanza cuando un usuario YA logueado intenta hacer una acción para la que no tiene
+    // el rol o permiso necesario (ej. un USER intentando listar las facturas de otro usuario) → 403
     @ExceptionHandler(AccessDeniedException.class)
      public ResponseEntity<?> manejarAccesoDenegado(AccessDeniedException ex) {
         log.warn("Intento de acceso no autorizado: {}", ex.getMessage());

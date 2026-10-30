@@ -4,8 +4,10 @@ import com.tienda.backend.dto.ProductosDTO;
 import com.tienda.backend.entity.ProductosEntity;
 import com.tienda.backend.entity.UsuarioEntity;
 import com.tienda.backend.exception.RecursoDuplicadoException;
+import com.tienda.backend.exception.RecursoEnUsoException;
 import com.tienda.backend.exception.RecursoNoEncontradoException;
 import com.tienda.backend.mapper.IProductoMapper;
+import com.tienda.backend.repository.IDetalleFacturaRepository;
 import com.tienda.backend.repository.IProductosRepository;
 import com.tienda.backend.repository.IUsuarioRepository;
 import com.tienda.backend.service.ICargaCsvService;
@@ -35,6 +37,9 @@ public class ProductoServiceImpl implements IProductoService {
 
     @Autowired
     private CsvProcesadorService csvProcesadorService;
+
+    @Autowired
+    IDetalleFacturaRepository iDetalleFacturaRepository;
 
     @Autowired
     private IProductoMapper productoMapper;
@@ -114,9 +119,14 @@ public class ProductoServiceImpl implements IProductoService {
     @Transactional
     public void eliminarProducto(Long id_Productos) {
 
-        // Se valida que el usuario exista antes de eliminar
+        // Se valida que el producto exista antes de eliminar
         ProductosEntity productosEnt = iProductosRepository.findById(id_Productos)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Producto con ID --> "+id_Productos+" No encontrado"));
+
+        long cantidadDetalles = iDetalleFacturaRepository.contarDetallesPorProducto(id_Productos);
+        if (cantidadDetalles > 0) {
+            throw new RecursoEnUsoException("No se puede eliminar el producto °"+productosEnt.getNombreProducto()+"° con ID --> "+id_Productos+" porque tiene "+cantidadDetalles+" detalles de factura registrados");
+        }
 
         // Se elimina el producto
         iProductosRepository.delete(productosEnt);

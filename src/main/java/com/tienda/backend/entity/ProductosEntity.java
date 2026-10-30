@@ -32,7 +32,7 @@ public class ProductosEntity {
     @Column(name = "categoria", nullable = false)
     private String categoria;
 
-    @OneToMany(mappedBy = "productosEnt", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "productosEnt", fetch = FetchType.LAZY)
     @JsonIgnore
     private Set<DetalleFacturaEntity> listaDetalleFacturaEnt = new HashSet<>();
 }
