@@ -21,7 +21,10 @@ public class SecurityUtils {
     public boolean esAdministrador() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        return authentication.getAuthorities().stream()
-                .anyMatch(authority -> authority.getAuthority().equals("ROLE_" + RolesConstantes.ADMIN));
+        return authentication.getAuthorities()
+                .stream()
+                .anyMatch(authority ->
+                        authority.getAuthority()
+                                .equals("ROLE_" + RolesConstantes.ADMIN));
     }
 }

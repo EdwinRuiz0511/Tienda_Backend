@@ -55,17 +55,17 @@ public class SecurityConfig {
                         .accessDeniedHandler(customAccessDeniedHandler))
 
                 .authorizeHttpRequests(auth -> auth
-                        // 🔓 ENDPOINTS PÚBLICOS
+                        // ENDPOINTS PÚBLICOS
                         .requestMatchers("/auth/**").permitAll()
 
-                        // 👤 USER y ADMIN
+                        // USER y ADMIN
                         .requestMatchers(HttpMethod.GET,
                                 "/facturas/**",
                                 "/usuarios/listarUsuariosConFacturas/**",
                                 "/usuarios/listarUsuariosConFacturasYDetalles/**"
                         ).hasAnyRole(RolesConstantes.USER, RolesConstantes.ADMIN)
 
-                        // 👑 SOLO ADMIN
+                        // SOLO ADMIN
                         .requestMatchers("/usuarios/**",
                                 "/facturas/**",
                                 "/producto/**",
@@ -73,7 +73,7 @@ public class SecurityConfig {
                                 "/carga-csv/**"
                         ).hasRole(RolesConstantes.ADMIN)
 
-                        // 🔒 CUALQUIER OTRA PETICIÓN
+                        // CUALQUIER OTRA PETICIÓN
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter,

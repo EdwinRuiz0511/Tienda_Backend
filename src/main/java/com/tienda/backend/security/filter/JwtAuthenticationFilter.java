@@ -6,16 +6,19 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+@Slf4j
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
@@ -43,24 +46,29 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         String token = authHeader.substring(7);                                                               // Extrae el JWT puro, sin el prefijo "Bearer "
-        if (jwtService.tokenEsValido(token)) {                                                                          // Primero valida de forma segura (ya tiene try/catch adentro)
+        if (jwtService.tokenEsValido(token)) {                                                                          // Primero valida de forma segura que el token no esté vencido ni falsificado.(ya tiene try/catch adentro)
             String username = jwtService.extraerUsername(token);                                                        // Solo si es válido, extrae el username
 
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {                   // Evita re-autenticar si ya hay una autenticación en curso
-                UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);                        // Carga los datos reales del usuario desde la base de datos
+                try {
+                    UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);                    // Carga los datos reales del usuario desde la base de datos
 
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken                 // Crea el objeto de autenticación que Spring Security entiende
-                        (userDetails, null, userDetails.getAuthorities());
+                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken             // Aquí es donde se recibe tu carnet de identidad oficial. El carnet dice: "Edwin, con roles ROLE_USER
+                            (userDetails, null, userDetails.getAuthorities());
 
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));                       // Asocia detalles de la petición (IP, sesión) a la autenticación
-                SecurityContextHolder.getContext().setAuthentication(authToken);                                        // Guarda la autenticación: de acá en adelante, el usuario queda identificado
+                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));                   // Asocia detalles de la petición (IP, sesión) a la autenticación
+                    SecurityContextHolder.getContext().setAuthentication(authToken);                                    // Guarda la autenticación: de acá en adelante, el usuario queda identificado
+
+                } catch (UsernameNotFoundException e) {
+                    log.warn("Token valido de un usuario que ya no existe: {}", username);
+                }
             }
         }
         filterChain.doFilter(request, response);                                                                        // Continuar con la petición                                                                      // Continuar con la petición
     }
 }
 
-/*
+/**
 
 request → lo que entra del cliente.
 response → lo que sale hacia el cliente.
