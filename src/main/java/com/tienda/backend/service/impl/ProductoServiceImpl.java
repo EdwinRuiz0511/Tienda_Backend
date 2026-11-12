@@ -6,6 +6,7 @@ import com.tienda.backend.entity.UsuarioEntity;
 import com.tienda.backend.exception.RecursoDuplicadoException;
 import com.tienda.backend.exception.RecursoEnUsoException;
 import com.tienda.backend.exception.RecursoNoEncontradoException;
+import com.tienda.backend.exception.SolicitudInvalidaException;
 import com.tienda.backend.mapper.IProductoMapper;
 import com.tienda.backend.repository.IDetalleFacturaRepository;
 import com.tienda.backend.repository.IProductosRepository;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,7 +41,7 @@ public class ProductoServiceImpl implements IProductoService {
     private CsvProcesadorService csvProcesadorService;
 
     @Autowired
-    IDetalleFacturaRepository iDetalleFacturaRepository;
+    private IDetalleFacturaRepository iDetalleFacturaRepository;
 
     @Autowired
     private IProductoMapper productoMapper;
@@ -54,14 +56,23 @@ public class ProductoServiceImpl implements IProductoService {
         UsuarioEntity usuarioEnt = iUsuarioRepository.findByUsername(username)
                 .orElseThrow(() -> new RecursoNoEncontradoException("El usuario --> °" + username + "° No fue encontrado"));
 
-        // 2. Crear el registro de seguimiento en estado PENDIENTE
+        // 2. Copiar el contenido del archivo a memoria, ANTES de lazar el hilo (ya que el temporal de spring se borra a terminar la peticion)
+        byte[] contenidoArchivo;
+        try {
+            contenidoArchivo = file.getBytes();
+        } catch (IOException e) {
+            log.error("No se pudo leer el archivo CSV subido: ", e);
+            throw new SolicitudInvalidaException("No se pudo leer el archivo, intenta subirlo de nuevo");
+        }
+
+        // 3. Crear el registro de seguimiento en estado PENDIENTE
         String nombreArchivo = file.getOriginalFilename();
         Long idCarga = iCargaCsvService.crearCargaPendiente(nombreArchivo, usuarioEnt);
 
-        // 3. Disparar el procesamiento real, en segundo plano
-        csvProcesadorService.guardarCsv(file, idCarga);
+        // 4. Disparar el procesamiento real, en segundo plano
+        csvProcesadorService.guardarCsv(contenidoArchivo, idCarga);
 
-        //4. Devolver el ID inmediatamente, sin esperar a que guardarCsv termine
+        //5. Devolver el ID inmediatamente, sin esperar a que guardarCsv termine
         return idCarga;
     }
 

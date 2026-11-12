@@ -114,7 +114,8 @@ public class DetalleFacturaServiceImpl implements IDetalleFacturaService {
 
         // 6. Convertir lista de productos en mapa para búsqueda rápida -> O(n)
         Map<Long, ProductosEntity> mapaProductosEnt = productosEnt.stream()
-                .collect(Collectors.toMap(ProductosEntity :: getId_Producto, productos -> productos));
+                .collect(Collectors.toMap(ProductosEntity :: getId_Producto,                                            // Clave: Usa el id_Producto como clave
+                        productos -> productos));                                                          // Valor: El valor es el producto completo
 
         // 7. Lista donde guardaremos los detalles listos para insertar
         List<DetalleFacturaEntity> detallesGuardar = new ArrayList<>();

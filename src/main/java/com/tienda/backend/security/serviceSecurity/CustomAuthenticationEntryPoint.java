@@ -1,12 +1,3 @@
-/*
- * CustomAuthenticationEntryPoint:
- * Spring Security invoca esta clase cuando alguien intenta acceder a un endpoint protegido
- * SIN estar autenticado (sin token, token vencido, token corrupto o con firma inválida).
- * Reemplaza el comportamiento por defecto (Http403ForbiddenEntryPoint, que siempre devuelve 403)
- * para devolver el código correcto (401 Unauthorized) junto con el mismo formato JSON
- * que usa GlobalExceptionHandler en el resto de la API.
- */
-
 package com.tienda.backend.security.serviceSecurity;
 
 import jakarta.servlet.ServletException;
@@ -23,6 +14,15 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
+/**
+ * CustomAuthenticationEntryPoint:
+ * Spring Security invoca esta clase cuando alguien intenta acceder a un endpoint protegido
+ * SIN estar autenticado (sin token, token vencido, token corrupto o con firma inválida).
+ * Reemplaza el comportamiento por defecto (Http403ForbiddenEntryPoint, que siempre devuelve 403)
+ * para devolver el código correcto (401 Unauthorized) junto con el mismo formato JSON
+ * que usa GlobalExceptionHandler en el resto de la API.
+ */
 
 @Component
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {

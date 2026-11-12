@@ -10,11 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -57,9 +57,9 @@ public class CsvProcesadorService {
     //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @Async                                                                                                              // Este método corre en segundo plano, para que la página no se congele mientras se procesa el archivo
-    public void guardarCsv(MultipartFile file, Long idCarga) {
+    public void guardarCsv(byte[] contenidoArchivo, Long idCarga) {
 
-        try (Reader reader = new InputStreamReader(file.getInputStream());                                              // Obtiene los bytes del archivo y los convierte en caracteres
+        try (Reader reader = new InputStreamReader(new ByteArrayInputStream(contenidoArchivo), StandardCharsets.UTF_8); // Obtiene los bytes del archivo y los convierte en caracteres usando UTF-8 (fijo, sin depender del charset por defecto de la JVM)
              CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(1).build()) {                             // Lee el archivo como CSV e ignora la primera fila (encabezados)
 
             List<String[]> filas = csvReader.readAll();                                                                 // Lee todas las filas del CSV: cada fila es un arreglo con los datos de una línea del Excel
